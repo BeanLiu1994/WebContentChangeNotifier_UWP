@@ -102,6 +102,9 @@
     <Compile Include="WebContentChangeNotifyItem.xaml.cs">
       <DependentUpon>WebContentChangeNotifyItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WebContentChangeNotifyView.xaml.cs">
+      <DependentUpon>WebContentChangeNotifyView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -129,6 +132,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="WebContentChangeNotifyItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WebContentChangeNotifyView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

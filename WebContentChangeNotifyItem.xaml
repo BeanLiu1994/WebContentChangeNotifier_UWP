@@ -17,12 +17,12 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <ListView Name="TimeLineContainer" ItemClick="ItemClicked" ItemsSource="{Binding }" SelectionChanged="ItemSelectionChanged" MaxWidth="350">
+            <ListView Name="TimeLineContainer" ItemClick="ItemClicked" SelectionChanged="ItemSelectionChanged" MaxWidth="350">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="8">
                             <TextBlock Text="目标网址:"/>
-                            <TextBox Text="{Binding Url}" Margin="0,0,0,10" FontWeight="Bold" TextWrapping="Wrap" IsReadOnly="True"/>
+                            <TextBox Text="{Binding Url}" Margin="0,0,0,10" FontWeight="Bold" IsReadOnly="True" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False"/>
                             <TextBlock Text="最近截取时间:"/>
                             <ListView ItemsSource="{Binding TimeStamp}" HorizontalAlignment="Stretch" Margin="10" SelectionMode="None" IsHitTestVisible="False" IsTabStop="False" IsSwipeEnabled="False" ShowsScrollingPlaceholders="False">
                                 <ListView.ItemTemplate>

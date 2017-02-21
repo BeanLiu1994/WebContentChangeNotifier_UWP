@@ -16,6 +16,7 @@ using WebContentChangeCheckerUtil;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.UI.ViewManagement;
+using Windows.UI.Core;
 
 // “空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=234238 上有介绍
 
@@ -31,22 +32,28 @@ namespace WebContentChangeNotify
         public WebContentChangeNotifyItem()
         {
             this.InitializeComponent();
-            SelectChecker("test", "https://ibug.doc.ic.ac.uk/resources/lsfm/");
         }
         public void SelectChecker(string Id, string Url)
         {
-            CurrentChecker = new UrlContentChangeChecker(Id, new Uri(Url));
-            var view = ApplicationView.GetForCurrentView();
-            if (Url.Count() > 24)
-                view.Title = Id + "的快照情况 (" + Url.Substring(0, 24) + "...)";
-            else
-                view.Title = Id + "的快照情况 (" + Url + ")";
+            SelectChecker(new UrlContentChangeChecker(Id, new Uri(Url)));
             BindItemsSource();
         }
 
-        public async void BindItemsSource()
+        public void SelectChecker(UrlContentChangeChecker UrlChecker)
         {
-            await CurrentChecker.CheckExistance();
+            CurrentChecker = UrlChecker;
+            var view = ApplicationView.GetForCurrentView();
+            if (UrlChecker.webURL.OriginalString.Count() > 24)
+                view.Title = UrlChecker.id + "的快照情况 (" + UrlChecker.webURL.OriginalString.Substring(0, 24) + "...)";
+            else
+                view.Title = UrlChecker.id + "的快照情况 (" + UrlChecker.webURL.OriginalString + ")";
+            BindItemsSource(false);
+        }
+
+        public async void BindItemsSource(bool ForceUpdate = true)
+        {
+            if(ForceUpdate)
+                await CurrentChecker.CheckExistance();
             TimeLineContainer.ItemsSource = CurrentChecker.UrlContentSnapList;
             if (TimeLineContainer.Items.Count > 0)
                 TimeLineContainer.SelectedIndex = 0;
@@ -67,6 +74,23 @@ namespace WebContentChangeNotify
         private async void GetSnap(object sender, TappedRoutedEventArgs e)
         {
             await CurrentChecker.CheckNow();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            SelectChecker(e.Parameter as UrlContentChangeChecker);
+            SystemNavigationManager.GetForCurrentView().BackRequested +=
+                (sender, param) =>
+                {
+                    Frame rootFrame = Window.Current.Content as Frame;
+
+                    if (rootFrame != null && rootFrame.CanGoBack)
+                    {
+                        param.Handled = true;
+                        rootFrame.GoBack();
+                    }
+                };
+            base.OnNavigatedTo(e);
         }
     }
 }

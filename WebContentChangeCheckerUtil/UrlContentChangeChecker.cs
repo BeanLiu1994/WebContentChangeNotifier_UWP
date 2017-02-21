@@ -225,11 +225,24 @@ namespace WebContentChangeCheckerUtil
         }
     }
 
-    public class UrlContentChangeChecker
+    public class UrlContentChangeChecker:INotifyPropertyChanged
     {
-        public string id { get; protected set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void PropertyChangeEventHappen(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        private bool _Updating;
+        public bool Updating { get { return _Updating; } protected set { _Updating = value; PropertyChangeEventHappen(nameof(Updating)); } }
 
-        public Uri webURL { get; protected set; }
+        private string _id;
+        public string id { get { return _id; } protected set { _id = value;PropertyChangeEventHappen(nameof(id)); } }
+
+        private Uri _webURL;
+        public Uri webURL { get { return _webURL; } protected set { _webURL = value; PropertyChangeEventHappen(nameof(webURL)); } }
+
+        private string _recentStamp;
+        public string recentStamp { get { return _recentStamp; } protected set { _recentStamp = value; PropertyChangeEventHappen(nameof(recentStamp)); } }
 
         public ObservableCollection<UrlContentSnap> UrlContentSnapList { get; protected set; }
 
@@ -239,12 +252,14 @@ namespace WebContentChangeCheckerUtil
         {
             UrlContentSnapList = new ObservableCollection<UrlContentSnap>();
             id = _id;
+            Updating = false;
             webURL = null;
         }
         public UrlContentChangeChecker(string _id, Uri _webURL)
         {
             UrlContentSnapList = new ObservableCollection<UrlContentSnap>();
             id = _id;
+            Updating = false;
             webURL = _webURL;
         }
         public async Task<bool> CheckExistance()
@@ -259,6 +274,7 @@ namespace WebContentChangeCheckerUtil
                 localStorageFolder = await local.CreateFolderAsync(id);
             }
             if (localStorageFolder == null) return false;
+            Updating = true;
 
             StorageFile UrlInfo;
             try
@@ -283,7 +299,9 @@ namespace WebContentChangeCheckerUtil
                     }
                 }
             }
+            Updating = false;
             if (UrlInfo == null) return false;
+            Updating = true;
 
             var FileList = await localStorageFolder.GetFilesAsync();
             var FileList_Snaps = FileList.Where(a => { if (a.Name.EndsWith(".html")||(!a.Name.StartsWith("Snap"))) return false; else return true; });
@@ -294,13 +312,15 @@ namespace WebContentChangeCheckerUtil
                 await Snap.LoadFromFile();
                 UrlContentSnapList.Insert(0,Snap);
             }
-
+            if (UrlContentSnapList.Count > 0)
+                recentStamp = UrlContentSnapList[0].TimeStamp[0].ToString();
+            Updating = false;
             return true;
         }
         public async Task CheckNow()
         {
             if (localStorageFolder == null || webURL == null) return;
-
+            Updating = true;
             string Content = await GetFromUrl(webURL);
 
             UrlContentSnap newOne = new UrlContentSnap();
@@ -319,6 +339,8 @@ namespace WebContentChangeCheckerUtil
                 UrlContentSnapList.Insert(0,newOne);
                 sendNotification(newOne);
             }
+            recentStamp = newOne.TimeStamp[0].ToString();
+            Updating = false;
         }
         protected async Task<string> GetFromUrl(Uri url)
         {
@@ -381,6 +403,25 @@ namespace WebContentChangeCheckerUtil
             {
                 await m.CheckNow();
             }
+        }
+        public async Task<bool> AddItem(string id,string url)
+        {
+            if (UrlContentCheckerList.Where(m => { if (m.id == id) return true; else return false; }).Count() > 0)
+                return false;
+            Uri uri;
+            try
+            {
+                uri = new Uri(url);
+            }
+            catch
+            {
+                return false;
+            }
+            var newOne = new UrlContentChangeChecker(id, uri);
+            if(!await newOne.CheckExistance())
+                await newOne.CheckNow();
+            UrlContentCheckerList.Insert(0, newOne);
+            return true;
         }
     }
 }
