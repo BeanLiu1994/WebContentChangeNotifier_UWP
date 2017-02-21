@@ -44,7 +44,7 @@
             </AppBarButton>
             <AppBarButton Icon="Refresh" Label="Update" Tapped="UpdateButtonClicked"/>
         </CommandBar>
-        <StackPanel Orientation="Vertical">
+        <StackPanel HorizontalAlignment="Left">
             <TextBlock Text="网页内容变化自动检测" Margin="8,8,8,0"/>
             <TextBlock Text="v1.0" FontSize="12" Margin="8,0"/>
         </StackPanel>
