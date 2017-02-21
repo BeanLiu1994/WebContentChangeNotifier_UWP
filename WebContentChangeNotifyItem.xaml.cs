@@ -14,6 +14,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using WebContentChangeCheckerUtil;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using Windows.UI.ViewManagement;
 
 // “空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=234238 上有介绍
 
@@ -25,24 +27,28 @@ namespace WebContentChangeNotify
     /// 
     public sealed partial class WebContentChangeNotifyItem : Page
     {
-        public UrlContentChangeChecker CurrentChecker { get; protected set; }
+        public UrlContentChangeChecker CurrentChecker { get; private set; }
         public WebContentChangeNotifyItem()
         {
             this.InitializeComponent();
-            SelectChecker();
-            BindItemsSource();
+            SelectChecker("test", "https://ibug.doc.ic.ac.uk/resources/lsfm/");
         }
-        public void SelectChecker()
+        public void SelectChecker(string Id, string Url)
         {
-            UrlContentChangeChecker test = new UrlContentChangeChecker("test", new Uri("https://ibug.doc.ic.ac.uk/resources/lsfm/"));
-            CurrentChecker = test;
+            CurrentChecker = new UrlContentChangeChecker(Id, new Uri(Url));
+            var view = ApplicationView.GetForCurrentView();
+            if (Url.Count() > 24)
+                view.Title = Id + "的快照情况 (" + Url.Substring(0, 24) + "...)";
+            else
+                view.Title = Id + "的快照情况 (" + Url + ")";
+            BindItemsSource();
         }
 
         public async void BindItemsSource()
         {
             await CurrentChecker.CheckExistance();
             TimeLineContainer.ItemsSource = CurrentChecker.UrlContentSnapList;
-            if(TimeLineContainer.Items.Count>0)
+            if (TimeLineContainer.Items.Count > 0)
                 TimeLineContainer.SelectedIndex = 0;
         }
 
@@ -58,9 +64,9 @@ namespace WebContentChangeNotify
             WebContentShow.NavigateToString(snap.Content);
         }
 
-        private void GetSnap(object sender, TappedRoutedEventArgs e)
+        private async void GetSnap(object sender, TappedRoutedEventArgs e)
         {
-            CurrentChecker.CheckNow();
+            await CurrentChecker.CheckNow();
         }
     }
 }

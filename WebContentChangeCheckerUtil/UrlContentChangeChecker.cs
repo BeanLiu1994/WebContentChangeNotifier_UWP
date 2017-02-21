@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using Toasts;
 using Windows.Storage;
 
 namespace WebContentChangeCheckerUtil
@@ -234,6 +235,12 @@ namespace WebContentChangeCheckerUtil
 
         protected StorageFolder localStorageFolder;
 
+        public UrlContentChangeChecker(string _id)
+        {
+            UrlContentSnapList = new ObservableCollection<UrlContentSnap>();
+            id = _id;
+            webURL = null;
+        }
         public UrlContentChangeChecker(string _id, Uri _webURL)
         {
             UrlContentSnapList = new ObservableCollection<UrlContentSnap>();
@@ -253,23 +260,46 @@ namespace WebContentChangeCheckerUtil
             }
             if (localStorageFolder == null) return false;
 
+            StorageFile UrlInfo;
+            try
+            {
+                UrlInfo = await localStorageFolder.GetFileAsync("UrlInfo");
+                using (Stream file = await UrlInfo.OpenStreamForReadAsync())
+                {
+                    using (StreamReader read = new StreamReader(file))
+                    {
+                        webURL = new Uri(read.ReadToEnd());
+                    }
+                }
+            }
+            catch
+            {
+                UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
+                using (Stream file = await UrlInfo.OpenStreamForWriteAsync())
+                {
+                    using (StreamWriter write = new StreamWriter(file))
+                    {
+                        write.Write(webURL);
+                    }
+                }
+            }
+            if (UrlInfo == null) return false;
+
             var FileList = await localStorageFolder.GetFilesAsync();
-            var FileList_Snaps = FileList.Where(a => { if (a.Name.EndsWith(".html")) return false; else return true; });
+            var FileList_Snaps = FileList.Where(a => { if (a.Name.EndsWith(".html")||(!a.Name.StartsWith("Snap"))) return false; else return true; });
             foreach (var file in FileList_Snaps)
             {
                 var Snap = new UrlContentSnap();
                 Snap.path = file.Path;
                 await Snap.LoadFromFile();
-                UrlContentSnapList.Add(Snap);
+                UrlContentSnapList.Insert(0,Snap);
             }
-            // 没写完 如果文件夹存在时读取所有snap到UrlContentSnapList内
 
             return true;
-
         }
-        public async void CheckNow()
+        public async Task CheckNow()
         {
-            if (localStorageFolder == null) return;
+            if (localStorageFolder == null || webURL == null) return;
 
             string Content = await GetFromUrl(webURL);
 
@@ -277,16 +307,16 @@ namespace WebContentChangeCheckerUtil
             newOne.Content = Content;
             newOne.TimeStamp.Add(DateTime.Now);
             newOne.Url = webURL.OriginalString;
-            newOne.path = localStorageFolder.Path + "\\Snap_" + newOne.TimeStamp[0].ToString("yyyyMMddHHmmss");
-            if (UrlContentSnapList.Count > 0 && CompareToRecentRecord(UrlContentSnapList.Last(), newOne))
+            newOne.path = localStorageFolder.Path + "\\Snap_" + newOne.TimeStamp.Last().ToString("yyyyMMddHHmmss");
+            if (UrlContentSnapList.Count > 0 && CompareToRecentRecord(UrlContentSnapList.First(), newOne))
             {//same
-                UrlContentSnapList.Last().TimeStamp.Insert(0,DateTime.Now);
-                await UrlContentSnapList.Last().SaveToFile(SaveMode.Update);
+                UrlContentSnapList.First().TimeStamp.Insert(0,DateTime.Now);
+                await UrlContentSnapList.First().SaveToFile(SaveMode.Update);
             }
             else
             {
                 await newOne.SaveToFile();
-                UrlContentSnapList.Add(newOne);
+                UrlContentSnapList.Insert(0,newOne);
                 sendNotification(newOne);
             }
         }
@@ -320,7 +350,37 @@ namespace WebContentChangeCheckerUtil
         }
         void sendNotification(UrlContentSnap newOne)
         {
-            // 发送通知
+            // 有新的出现后发送通知
+            if (UrlContentSnapList.Count > 1)
+                ToastsDef.SendNotification_TwoString("关注的网站 [" + id + "] 内容更新了", newOne.Url);
+        }
+    }
+
+    public class UrlContentChangeCheckerManager
+    {
+        public ObservableCollection<UrlContentChangeChecker> UrlContentCheckerList { get; protected set; }
+        public UrlContentChangeCheckerManager()
+        {
+            UrlContentCheckerList = new ObservableCollection<UrlContentChangeChecker>();
+        }
+        public async Task Init()
+        {
+            UrlContentCheckerList.Clear();
+            var local = ApplicationData.Current.LocalFolder;
+            var Folders = await local.GetFoldersAsync();
+            foreach (var m in Folders)
+            {
+                var uccc = new UrlContentChangeChecker(m.Name);
+                await uccc.CheckExistance();
+                UrlContentCheckerList.Add(uccc);
+            }
+        }
+        public async Task CheckAll()
+        {
+            foreach (var m in UrlContentCheckerList)
+            {
+                await m.CheckNow();
+            }
         }
     }
 }

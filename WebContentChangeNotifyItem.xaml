@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
@@ -20,11 +20,11 @@
             <ListView Name="TimeLineContainer" ItemClick="ItemClicked" ItemsSource="{Binding }" SelectionChanged="ItemSelectionChanged" MaxWidth="350">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Margin="10">
+                        <StackPanel Margin="8">
                             <TextBlock Text="目标网址:"/>
-                            <TextBlock Text="{Binding Url}" Margin="4,4,4,14" FontWeight="Bold" TextWrapping="Wrap"/>
+                            <TextBox Text="{Binding Url}" Margin="0,0,0,10" FontWeight="Bold" TextWrapping="Wrap" IsReadOnly="True"/>
                             <TextBlock Text="最近截取时间:"/>
-                            <ListView ItemsSource="{Binding TimeStamp}" HorizontalAlignment="Stretch" Margin="10" SelectionMode="None">
+                            <ListView ItemsSource="{Binding TimeStamp}" HorizontalAlignment="Stretch" Margin="10" SelectionMode="None" IsHitTestVisible="False" IsTabStop="False" IsSwipeEnabled="False" ShowsScrollingPlaceholders="False">
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding}" FontWeight="Bold" ></TextBlock>

@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
+using TileRefresh;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Background;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -30,6 +35,7 @@ namespace WebContentChangeNotify
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            RegisterWorks();
         }
 
         /// <summary>
@@ -101,6 +107,62 @@ namespace WebContentChangeNotify
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: 保存应用程序状态并停止任何后台活动
             deferral.Complete();
+        }
+
+
+        private async void RegisterWorks()
+        {
+            var Timer_Condition = new IBackgroundCondition[]{
+                new SystemCondition(SystemConditionType.FreeNetworkAvailable)
+            };
+            await RegisterLiveTileTask(
+                "TimerTask",
+                typeof(TileRefreshUtils).FullName,
+                new TimeTrigger(60, false),
+                Timer_Condition
+                );
+        }
+
+        //LiveTileSetting
+        public static async Task RegisterLiveTileTask(string _Name, string _TaskEntryPoint, IBackgroundTrigger _Trigger, IBackgroundCondition[] _ConditionTable)
+        {
+            //建立builder
+            var taskBuilder = new BackgroundTaskBuilder
+            {
+                Name = _Name,
+                TaskEntryPoint = _TaskEntryPoint
+            };
+            //清除已有的
+            var status = await BackgroundExecutionManager.RequestAccessAsync();
+            if (status == BackgroundAccessStatus.Unspecified || status == BackgroundAccessStatus.Denied)
+            {
+                return;
+            }
+            var updater = TileUpdateManager.CreateTileUpdaterForApplication();
+            updater.Clear();
+
+            foreach (var t in BackgroundTaskRegistration.AllTasks)
+            {
+                if (t.Value.Name == taskBuilder.Name)
+                {
+                    t.Value.Unregister(true);
+                }
+            }
+            //如果Trigger为null撤销这个后台任务
+            if (_Trigger == null) return;
+
+            //继续构建builder
+            taskBuilder.SetTrigger(_Trigger);
+
+            if (_ConditionTable != null)
+                foreach (var m in _ConditionTable)
+                {
+                    taskBuilder.AddCondition(m);
+                }
+
+            //注册
+            taskBuilder.Register();
+            Debug.WriteLine("注册了名为" + _Name + "的后台任务");
         }
     }
 }
