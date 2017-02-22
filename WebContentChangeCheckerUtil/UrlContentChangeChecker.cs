@@ -244,23 +244,82 @@ namespace WebContentChangeCheckerUtil
         private string _recentStamp;
         public string recentStamp { get { return _recentStamp; } protected set { _recentStamp = value; PropertyChangeEventHappen(nameof(recentStamp)); } }
 
+        private bool? _IsActivated;
+        public bool? IsActivated
+        {
+            get { return _IsActivated; }
+            set { _IsActivated = value; PropertyChangeEventHappen(nameof(IsActivated)); SaveUrlInfo(); }
+        }
+
         public ObservableCollection<UrlContentSnap> UrlContentSnapList { get; protected set; }
 
         protected StorageFolder localStorageFolder;
 
         public UrlContentChangeChecker(string _id)
         {
-            UrlContentSnapList = new ObservableCollection<UrlContentSnap>();
+            init();
             id = _id;
-            Updating = false;
             webURL = null;
         }
         public UrlContentChangeChecker(string _id, Uri _webURL)
         {
-            UrlContentSnapList = new ObservableCollection<UrlContentSnap>();
+            init();
             id = _id;
-            Updating = false;
             webURL = _webURL;
+        }
+        protected void init()
+        {
+            UrlContentSnapList = new ObservableCollection<UrlContentSnap>();
+            IsActivated = true;
+            Updating = false;
+        }
+
+
+        public async Task<StorageFile> LoadUrlInfo()
+        {
+            StorageFile UrlInfo;
+            Updating = true;
+            try
+            {
+                UrlInfo = await localStorageFolder.GetFileAsync("UrlInfo");
+                using (Stream file = await UrlInfo.OpenStreamForReadAsync())
+                {
+                    using (StreamReader read = new StreamReader(file))
+                    {
+                        webURL = new Uri(read.ReadLine());
+                        IsActivated = bool.Parse(read.ReadLine());
+                    }
+                }
+            }
+            catch
+            {
+                UrlInfo = await SaveUrlInfo();
+            }
+            Updating = false;
+            return UrlInfo;
+        }
+        public async Task<StorageFile> SaveUrlInfo()
+        {
+            StorageFile UrlInfo;
+            Updating = true;
+            try
+            {
+                UrlInfo = await localStorageFolder.GetFileAsync("UrlInfo");
+            }
+            catch
+            { 
+                UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
+            }
+            using (Stream file = await UrlInfo.OpenStreamForWriteAsync())
+            {
+                using (StreamWriter write = new StreamWriter(file))
+                {
+                    write.WriteLine(webURL);
+                    write.WriteLine(IsActivated.ToString());
+                }
+            }
+            Updating = false;
+            return UrlInfo;
         }
         public async Task<bool> CheckExistance()
         {
@@ -274,33 +333,10 @@ namespace WebContentChangeCheckerUtil
                 localStorageFolder = await local.CreateFolderAsync(id);
             }
             if (localStorageFolder == null) return false;
-            Updating = true;
 
-            StorageFile UrlInfo;
-            try
-            {
-                UrlInfo = await localStorageFolder.GetFileAsync("UrlInfo");
-                using (Stream file = await UrlInfo.OpenStreamForReadAsync())
-                {
-                    using (StreamReader read = new StreamReader(file))
-                    {
-                        webURL = new Uri(read.ReadToEnd());
-                    }
-                }
-            }
-            catch
-            {
-                UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
-                using (Stream file = await UrlInfo.OpenStreamForWriteAsync())
-                {
-                    using (StreamWriter write = new StreamWriter(file))
-                    {
-                        write.Write(webURL);
-                    }
-                }
-            }
-            Updating = false;
+            var UrlInfo = await LoadUrlInfo();
             if (UrlInfo == null) return false;
+
             Updating = true;
 
             var FileList = await localStorageFolder.GetFilesAsync();
@@ -319,7 +355,7 @@ namespace WebContentChangeCheckerUtil
         }
         public async Task CheckNow()
         {
-            if (localStorageFolder == null || webURL == null) return;
+            if (localStorageFolder == null || webURL == null || IsActivated == false) return;
             Updating = true;
             string Content = await GetFromUrl(webURL);
 
@@ -376,6 +412,12 @@ namespace WebContentChangeCheckerUtil
             if (UrlContentSnapList.Count > 1)
                 ToastsDef.SendNotification_TwoString("关注的网站 [" + id + "] 内容更新了", newOne.Url);
         }
+        public async void Delete()
+        {
+            Updating = true;
+            await localStorageFolder.DeleteAsync();
+            Updating = false;
+        }
     }
 
     public class UrlContentChangeCheckerManager
@@ -404,7 +446,15 @@ namespace WebContentChangeCheckerUtil
                 await m.CheckNow();
             }
         }
-        public async Task<bool> AddItem(string id,string url)
+        public void CheckAll_NoWait()
+        {
+            foreach (var m in UrlContentCheckerList)
+            {
+                m.CheckNow();
+            }
+            Task.Delay(4500);
+        }
+        public async Task<bool> AddItem(string id, string url)
         {
             if (UrlContentCheckerList.Where(m => { if (m.id == id) return true; else return false; }).Count() > 0)
                 return false;
@@ -418,9 +468,22 @@ namespace WebContentChangeCheckerUtil
                 return false;
             }
             var newOne = new UrlContentChangeChecker(id, uri);
-            if(!await newOne.CheckExistance())
+            if (!await newOne.CheckExistance())
                 await newOne.CheckNow();
             UrlContentCheckerList.Insert(0, newOne);
+            return true;
+        }
+        public bool DeleteItem(string id)
+        {
+            var DeleteItems = UrlContentCheckerList.Where(m =>
+              {
+                  if (m.id == id) return true;
+                  else return false;
+              });
+            //应该只有一个
+            if (DeleteItems.Count() == 0) return false;
+            DeleteItems.First().Delete();
+            UrlContentCheckerList.Remove(DeleteItems.First());
             return true;
         }
     }

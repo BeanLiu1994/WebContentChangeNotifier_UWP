@@ -5,7 +5,7 @@
     xmlns:local="using:WebContentChangeNotify"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Loaded="Init">
+    mc:Ignorable="d">
 
     <Grid Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}">
         <Grid.RowDefinitions>
@@ -15,17 +15,28 @@
         <GridView Name="MainList" SelectionMode="Single" IsItemClickEnabled="True" ItemClick="CheckerItemClicked" Grid.Row="1">
             <GridView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel Margin="10">
-                            <TextBlock Text="任务ID:"/>
-                            <TextBlock Text="{Binding id}" Margin="8,0,0,0" FontSize="18" FontWeight="Bold"/>
-                            <TextBlock Text="最近一次执行时间"/>
-                            <TextBlock Text="{Binding recentStamp}" Margin="8,0,0,0" FontSize="18" FontWeight="Bold"/>
-                            <TextBlock Text="保存的版本总数"/>
-                            <TextBlock Text="{Binding UrlContentSnapList.Count}" Margin="8,0,0,0" FontSize="18" FontWeight="Bold"/>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Margin="10">
+                                <TextBlock Text="任务ID:"/>
+                                <TextBlock Text="{Binding id}" Margin="8,0,0,0" FontSize="18" FontWeight="Bold"/>
+                                <TextBlock Text="最近一次执行时间"/>
+                                <TextBlock Text="{Binding recentStamp}" Margin="8,0,0,0" FontSize="18" FontWeight="Bold"/>
+                                <TextBlock Text="保存的版本总数"/>
+                                <TextBlock Text="{Binding UrlContentSnapList.Count}" Margin="8,0,0,0" FontSize="18" FontWeight="Bold"/>
+                                <CheckBox Content="激活" IsChecked="{Binding IsActivated, Mode=TwoWay}"/>
+                            </StackPanel>
+                            <ProgressRing IsActive="{Binding Updating}" Margin="8,0"/>
                         </StackPanel>
-                        <ProgressRing IsActive="{Binding Updating}"/>
-                    </StackPanel>
+                        <CommandBar Grid.Row="1">
+                            <AppBarButton Icon="Refresh" Label="刷新" Tapped="ItemRefreshClicked"/>
+                            <AppBarButton Icon="Delete" Label="删除" Tapped="ItemDeleteClicked"/>
+                        </CommandBar>
+                    </Grid>
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>

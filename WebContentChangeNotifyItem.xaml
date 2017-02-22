@@ -36,7 +36,7 @@
                 </ListView.ItemTemplate>
             </ListView>
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
-                <Button Tapped="GetSnap">
+                <Button Tapped="GetSnap" Margin="3,0">
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Margin="3" FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" VerticalAlignment="Center"/>
@@ -44,6 +44,7 @@
                         </StackPanel>
                     </Button.Content>
                 </Button>
+                <CheckBox Content="激活" IsChecked="{x:Bind CurrentChecker.IsActivated, Mode=TwoWay}" Margin="3,0"/>
             </StackPanel>
         </Grid>
         <WebView Name="WebContentShow" Grid.Column="1"/>

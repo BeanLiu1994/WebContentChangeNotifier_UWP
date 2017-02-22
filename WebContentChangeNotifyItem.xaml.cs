@@ -29,6 +29,7 @@ namespace WebContentChangeNotify
     public sealed partial class WebContentChangeNotifyItem : Page
     {
         public UrlContentChangeChecker CurrentChecker { get; private set; }
+
         public WebContentChangeNotifyItem()
         {
             this.InitializeComponent();
@@ -88,6 +89,8 @@ namespace WebContentChangeNotify
                     {
                         param.Handled = true;
                         rootFrame.GoBack();
+                        var view = ApplicationView.GetForCurrentView();
+                        view.Title = "网页内容变化检测";
                     }
                 };
             base.OnNavigatedTo(e);

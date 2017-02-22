@@ -16,6 +16,7 @@ using WebContentChangeCheckerUtil;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 
 // “空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=234238 上有介绍
 
@@ -30,14 +31,17 @@ namespace WebContentChangeNotify
         public WebContentChangeNotifyView()
         {
             this.InitializeComponent();
-            CurrentManager = new UrlContentChangeCheckerManager();
+            var view = ApplicationView.GetForCurrentView();
+            view.Title = "网页内容变化检测";
             NavigationCacheMode = NavigationCacheMode.Enabled;
+            Init(null,null);
         }
 
         private async void Init(object sender, RoutedEventArgs e)
         {
+            CurrentManager = new UrlContentChangeCheckerManager();
             await CurrentManager.Init();
-            await CurrentManager.CheckAll();
+            //await CurrentManager.CheckAll();
             MainList.ItemsSource = CurrentManager.UrlContentCheckerList;
         }
 
@@ -64,6 +68,18 @@ namespace WebContentChangeNotify
                 UI_url.Text = "";
             }
 
+        }
+
+        private async void ItemRefreshClicked(object sender, TappedRoutedEventArgs e)
+        {
+            var DataContext = (sender as AppBarButton).DataContext as UrlContentChangeChecker;
+            await DataContext.CheckNow();
+        }
+
+        private void ItemDeleteClicked(object sender, TappedRoutedEventArgs e)
+        {
+            var DataContext = (sender as AppBarButton).DataContext as UrlContentChangeChecker;
+            CurrentManager.DeleteItem(DataContext.id);
         }
     }
 }

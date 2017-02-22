@@ -15,7 +15,7 @@ namespace TileRefresh
             var deferral = taskInstance.GetDeferral();
             var TaskNow = new UrlContentChangeCheckerManager();
             await TaskNow.Init();
-            await TaskNow.CheckAll();
+            TaskNow.CheckAll_NoWait();
             deferral.Complete();
         }
     }
