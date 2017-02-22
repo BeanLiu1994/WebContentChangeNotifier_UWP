@@ -3,9 +3,13 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WebContentChangeNotify"
+    xmlns:UrlCCCUtil="using:WebContentChangeCheckerUtil"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    <Page.Resources>
+        <UrlCCCUtil:Nullable_boolRevertConverter x:Key="Nullable_boolRevertConverter"/>
+    </Page.Resources>
 
     <Grid Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}">
         <Grid.RowDefinitions>
@@ -22,17 +26,20 @@
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal">
                             <StackPanel Margin="10">
-                                <TextBlock Text="任务ID:"/>
-                                <TextBlock Text="{Binding id}" Margin="8,0,0,0" FontSize="18" FontWeight="Bold"/>
-                                <TextBlock Text="最近一次执行时间"/>
-                                <TextBlock Text="{Binding recentStamp}" Margin="8,0,0,0" FontSize="18" FontWeight="Bold"/>
-                                <TextBlock Text="保存的版本总数"/>
-                                <TextBlock Text="{Binding UrlContentSnapList.Count}" Margin="8,0,0,0" FontSize="18" FontWeight="Bold"/>
-                                <CheckBox Content="激活" IsChecked="{Binding IsActivated, Mode=TwoWay}"/>
+                                <StackPanel>
+                                    <TextBlock Text="任务ID:"/>
+                                    <TextBlock Text="{Binding id}" Margin="8,0,0,0" FontSize="18" FontWeight="Bold"/>
+                                    <TextBlock Text="最近一次执行时间"/>
+                                    <TextBlock Text="{Binding recentStamp}" Margin="8,0,0,0" FontSize="18" FontWeight="Bold"/>
+                                    <TextBlock Text="保存的版本总数"/>
+                                    <TextBlock Text="{Binding UrlContentSnapList.Count}" Margin="8,0,0,0" FontSize="18" FontWeight="Bold"/>
+                                </StackPanel>
+                                <CheckBox Content="激活" IsChecked="{Binding IsActivated, Mode=TwoWay}" IsEnabled="{Binding Updating, Converter={StaticResource Nullable_boolRevertConverter}}"/>
                             </StackPanel>
                             <ProgressRing IsActive="{Binding Updating}" Margin="8,0"/>
                         </StackPanel>
-                        <CommandBar Grid.Row="1">
+                        <CommandBar Grid.Row="1" IsEnabled="{Binding Updating, Converter={StaticResource Nullable_boolRevertConverter}}">
+                            <!--<AppBarToggleButton Icon="Accept" Label="激活" IsChecked="{Binding IsActivated, Mode=TwoWay}"/>-->
                             <AppBarButton Icon="Refresh" Label="刷新" Tapped="ItemRefreshClicked"/>
                             <AppBarButton Icon="Delete" Label="删除" Tapped="ItemDeleteClicked"/>
                         </CommandBar>
@@ -41,19 +48,19 @@
             </GridView.ItemTemplate>
         </GridView>
         <CommandBar>
-            <AppBarButton Icon="Add" Label="Add">
+            <AppBarButton Icon="Add" Label="添加">
                 <AppBarButton.Flyout>
                     <Flyout>
-                        <StackPanel>
+                        <StackPanel MaxWidth="250">
                             <TextBlock Text="添加一个任务:" HorizontalAlignment="Center" Margin="5" FontSize="20"/>
-                            <TextBox Name="UI_id" PlaceholderText="任务名" MinWidth="160" Margin="5" />
-                            <TextBox Name="UI_url" PlaceholderText="网址" MinWidth="160" Margin="5" />
+                            <TextBox Name="UI_id" PlaceholderText="任务名" MinWidth="240" Margin="5" TextWrapping="Wrap"/>
+                            <TextBox Name="UI_url" PlaceholderText="网址" MinWidth="240" Margin="5" TextWrapping="Wrap"/>
                             <Button Content="确定" HorizontalAlignment="Center" Margin="5" Tapped="AddButtonClicked"/>
                         </StackPanel>
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
-            <AppBarButton Icon="Refresh" Label="Update" Tapped="UpdateButtonClicked"/>
+            <AppBarButton Icon="Refresh" Label="更新全部" Tapped="UpdateButtonClicked"/>
         </CommandBar>
         <StackPanel HorizontalAlignment="Left">
             <TextBlock Text="网页内容变化自动检测" Margin="8,8,8,0"/>

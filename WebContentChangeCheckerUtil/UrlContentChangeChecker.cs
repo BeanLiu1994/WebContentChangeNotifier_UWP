@@ -13,9 +13,23 @@ using System.Threading.Tasks;
 using System.Xml;
 using Toasts;
 using Windows.Storage;
+using Windows.UI.Xaml.Data;
 
 namespace WebContentChangeCheckerUtil
 {
+    public class Nullable_boolRevertConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return !(value as bool?);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return !(value as bool?);
+        }
+    }
+
     public enum SaveMode {
         Update,Normal
     };
@@ -359,6 +373,9 @@ namespace WebContentChangeCheckerUtil
             Updating = true;
             string Content = await GetFromUrl(webURL);
 
+            if (Content.Count() == 0)
+            { Updating = false; return; }
+
             UrlContentSnap newOne = new UrlContentSnap();
             newOne.Content = Content;
             newOne.TimeStamp.Add(DateTime.Now);
@@ -471,6 +488,7 @@ namespace WebContentChangeCheckerUtil
             if (!await newOne.CheckExistance())
                 await newOne.CheckNow();
             UrlContentCheckerList.Insert(0, newOne);
+
             return true;
         }
         public bool DeleteItem(string id)

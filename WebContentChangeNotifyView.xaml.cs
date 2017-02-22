@@ -45,9 +45,10 @@ namespace WebContentChangeNotify
             MainList.ItemsSource = CurrentManager.UrlContentCheckerList;
         }
 
-        private async void UpdateButtonClicked(object sender, TappedRoutedEventArgs e)
+        private void UpdateButtonClicked(object sender, TappedRoutedEventArgs e)
         {
-            await CurrentManager.CheckAll();
+            //await CurrentManager.CheckAll();
+            CurrentManager.CheckAll_NoWait();
         }
 
         private void CheckerItemClicked(object sender, ItemClickEventArgs e)
