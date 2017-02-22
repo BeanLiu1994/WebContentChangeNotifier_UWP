@@ -94,7 +94,7 @@ namespace WebContentChangeNotify
         private void PageLoaded(object sender, RoutedEventArgs e)
         {
             CurrentTimerInfo = new TimerInfo();
-            TimerSelectorEnable.IsOn = CurrentTimerInfo.Enabled;
+            TimerSelectorEnable.SetBinding(ToggleSwitch.IsOnProperty, new Binding() { Mode = BindingMode.TwoWay, Source = CurrentTimerInfo, Path=new PropertyPath("Enabled") });
 
             var CurrentTimerSpan = (CurrentTimerInfo.TimerSpan);
             var SelectedNow = TimerSpanSelector.Items.Where(m=> { return double.Parse((m as ComboBoxItem).Tag as string) == CurrentTimerSpan; });
@@ -109,7 +109,7 @@ namespace WebContentChangeNotify
         private void TimerSpanChanged(object sender, SelectionChangedEventArgs e)
         {
             var Selector = sender as ComboBox;
-            CurrentTimerInfo.TimerSpan = double.Parse((Selector.SelectedItem as ComboBoxItem).Tag as string);
+            CurrentTimerInfo.TimerSpan = uint.Parse((Selector.SelectedItem as ComboBoxItem).Tag as string);
         }
     }
 }

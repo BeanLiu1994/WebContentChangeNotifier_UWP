@@ -355,13 +355,16 @@ namespace WebContentChangeCheckerUtil
 
             var FileList = await localStorageFolder.GetFilesAsync();
             var FileList_Snaps = FileList.Where(a => { if (a.Name.EndsWith(".html")||(!a.Name.StartsWith("Snap"))) return false; else return true; });
+            var Tasks = new List<Task<bool>>();
             foreach (var file in FileList_Snaps)
             {
                 var Snap = new UrlContentSnap();
                 Snap.path = file.Path;
-                await Snap.LoadFromFile();
+                Tasks.Add(Snap.LoadFromFile());
                 UrlContentSnapList.Insert(0,Snap);
             }
+            foreach (var m in Tasks)
+                await m;
             if (UrlContentSnapList.Count > 0)
                 recentStamp = UrlContentSnapList[0].TimeStamp[0].ToString();
             Updating = false;
@@ -449,18 +452,24 @@ namespace WebContentChangeCheckerUtil
             UrlContentCheckerList.Clear();
             var local = ApplicationData.Current.LocalFolder;
             var Folders = await local.GetFoldersAsync();
+            var Tasks = new List<Task<bool>>();
             foreach (var m in Folders)
             {
                 var uccc = new UrlContentChangeChecker(m.Name);
-                await uccc.CheckExistance();
+                Tasks.Add(uccc.CheckExistance());
                 UrlContentCheckerList.Add(uccc);
+            }
+            foreach(var m in Tasks)
+            {
+                await m;
             }
         }
         public async Task CheckAll()
         {
-            foreach (var m in UrlContentCheckerList)
+            var Tasks = CheckAll_NoWait();
+            foreach (var m in Tasks)
             {
-                await m.CheckNow();
+                await m;
             }
         }
         public List<Task> CheckAll_NoWait()

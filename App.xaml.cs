@@ -38,7 +38,7 @@ namespace WebContentChangeNotify
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-            RegisterWorks();
+            //RegisterWorks();
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace WebContentChangeNotify
                 await RegisterLiveTileTask(
                     "TimerTask",
                     typeof(TileRefreshUtils).FullName,
-                    new TimeTrigger((uint)TimerInfoSaved.TimerSpan, false),
+                    new TimeTrigger(TimerInfoSaved.TimerSpan, false),
                     Timer_Condition
                 );
             else
@@ -217,7 +217,7 @@ namespace WebContentChangeNotify
         }
 
         private uint _TimerSpan;
-        public double TimerSpan
+        public uint TimerSpan
         {
             get
             {
@@ -226,11 +226,11 @@ namespace WebContentChangeNotify
                 else
                     _TimerSpan = 60;
                 Debug.WriteLine("get: TimerSpan:" + _TimerSpan.ToString());
-                return (double)_TimerSpan;
+                return _TimerSpan;
             }
             set
             {
-                _TimerSpan = Convert.ToUInt32(value);
+                _TimerSpan = value;
                 ApplicationData.Current.LocalSettings.Values[key] = _TimerSpan;
                 Debug.WriteLine("set: TimerSpan:" + value.ToString());
                 PropertyChangeEventHappen(nameof(TimerSpan));
@@ -246,7 +246,7 @@ namespace WebContentChangeNotify
 
         public void UpdateWorkRegister()
         {
-            App.RegisterWorks();
+            App.RegisterWorks(this);
         }
     }
 }
