@@ -6,7 +6,7 @@
     xmlns:UrlCCCUtil="using:WebContentChangeCheckerUtil"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Loaded="PageLoaded">
     <Page.Resources>
         <UrlCCCUtil:Nullable_boolRevertConverter x:Key="Nullable_boolRevertConverter"/>
     </Page.Resources>
@@ -84,6 +84,32 @@
             </CommandBar.Content>
             <CommandBar.SecondaryCommands>
                 <AppBarButton Icon="Sync" Label="重新加载" Tapped="ReloadButtonClicked"/>
+                <AppBarButton Icon="ReShare" Label="定时任务">
+                    <AppBarButton.Flyout>
+                        <Flyout>
+                            <StackPanel>
+                                <TextBlock Text="定时任务"/>
+                                <ToggleSwitch Name="TimerSelectorEnable" OffContent="关" OnContent="开" IsOn="{x:Bind CurrentTimerInfo.Enabled,Mode=TwoWay}"/>
+                                <TextBlock Text="设定间隔(分钟):"/>
+                                <ComboBox Name="TimerSpanSelector" HorizontalAlignment="Stretch" Margin="5">
+                                    <ComboBoxItem Content="15Min" Tag="15"/>
+                                    <ComboBoxItem Content="30Min" Tag="30"/>
+                                    <ComboBoxItem Content="45Min" Tag="45"/>
+                                    <ComboBoxItem Content="1Hour" Tag="60"/>
+                                    <ComboBoxItem Content="2Hour" Tag="120"/>
+                                    <ComboBoxItem Content="3Hour" Tag="180"/>
+                                    <ComboBoxItem Content="4Hour" Tag="240"/>
+                                    <ComboBoxItem Content="8Hour" Tag="480"/>
+                                    <ComboBoxItem Content="12Hour" Tag="720"/>
+                                    <!--<ComboBoxItem Content="16Hour" Tag="960"/>
+                                    <ComboBoxItem Content="20Hour" Tag="1200"/>
+                                    <ComboBoxItem Content="24Hour" Tag="1440"/>-->
+                                </ComboBox>
+                                <!--<Slider x:Name="TimerSpan" Width="250" Minimum="15" LargeChange="15" Maximum="720" Value="{x:Bind Path=CurrentTimerInfo.TimerSpan,Mode=TwoWay}"/>-->
+                            </StackPanel>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Grid>

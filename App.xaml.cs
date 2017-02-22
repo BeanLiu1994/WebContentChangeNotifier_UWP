@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Background;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Notifications;
 using Windows.UI.Xaml;
@@ -120,16 +122,28 @@ namespace WebContentChangeNotify
         }
 
 
-        private async void RegisterWorks()
+        public async static void RegisterWorks(TimerInfo TimerInfoSaved = null)
         {
             var Timer_Condition = new IBackgroundCondition[]{
                 new SystemCondition(SystemConditionType.FreeNetworkAvailable)
             };
-            await RegisterLiveTileTask(
-                "TimerTask",
-                typeof(TileRefreshUtils).FullName,
-                new TimeTrigger(60, false),
-                Timer_Condition
+
+            if(TimerInfoSaved==null)
+                TimerInfoSaved = new TimerInfo();
+
+            if (TimerInfoSaved.Enabled)
+                await RegisterLiveTileTask(
+                    "TimerTask",
+                    typeof(TileRefreshUtils).FullName,
+                    new TimeTrigger((uint)TimerInfoSaved.TimerSpan, false),
+                    Timer_Condition
+                );
+            else
+                await RegisterLiveTileTask(
+                    "TimerTask",
+                    typeof(TileRefreshUtils).FullName,
+                    null,
+                    null
                 );
         }
 
@@ -173,6 +187,66 @@ namespace WebContentChangeNotify
             //注册
             taskBuilder.Register();
             Debug.WriteLine("注册了名为" + _Name + "的后台任务");
+        }
+    }
+    public class TimerInfo : INotifyPropertyChanged
+    {
+        const string key = "TimerTask";
+        const string key_enabled = "TimerTaskEnabled";
+
+        private bool _Enabled;
+        public bool Enabled
+        {
+            get
+            {
+                if (ApplicationData.Current.LocalSettings.Values.ContainsKey(key_enabled))
+                    _Enabled = (bool)ApplicationData.Current.LocalSettings.Values[key_enabled];
+                else
+                    _Enabled = false;
+                Debug.WriteLine("get: Enabled:" + _Enabled.ToString());
+                return _Enabled;
+            }
+            set
+            {
+                ApplicationData.Current.LocalSettings.Values[key_enabled] = value;
+                _Enabled = value;
+                Debug.WriteLine("set: Enabled:"+value.ToString());
+                PropertyChangeEventHappen(nameof(Enabled));
+                UpdateWorkRegister();
+            }
+        }
+
+        private uint _TimerSpan;
+        public double TimerSpan
+        {
+            get
+            {
+                if (ApplicationData.Current.LocalSettings.Values.ContainsKey(key))
+                    _TimerSpan = (uint)(ApplicationData.Current.LocalSettings.Values[key]);
+                else
+                    _TimerSpan = 60;
+                Debug.WriteLine("get: TimerSpan:" + _TimerSpan.ToString());
+                return (double)_TimerSpan;
+            }
+            set
+            {
+                _TimerSpan = Convert.ToUInt32(value);
+                ApplicationData.Current.LocalSettings.Values[key] = _TimerSpan;
+                Debug.WriteLine("set: TimerSpan:" + value.ToString());
+                PropertyChangeEventHappen(nameof(TimerSpan));
+                //UpdateWorkRegister();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void PropertyChangeEventHappen(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void UpdateWorkRegister()
+        {
+            App.RegisterWorks();
         }
     }
 }

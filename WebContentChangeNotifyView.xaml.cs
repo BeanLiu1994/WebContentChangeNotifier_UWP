@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
+using Windows.Storage;
 
 // “空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=234238 上有介绍
 
@@ -28,21 +29,22 @@ namespace WebContentChangeNotify
     public sealed partial class WebContentChangeNotifyView : Page
     {
         UrlContentChangeCheckerManager CurrentManager;
+        public TimerInfo CurrentTimerInfo { get; private set; }
         public WebContentChangeNotifyView()
         {
             this.InitializeComponent();
             var view = ApplicationView.GetForCurrentView();
             view.Title = "网页内容变化检测";
             NavigationCacheMode = NavigationCacheMode.Enabled;
-            Init(null,null);
+            Init();
         }
 
-        private async void Init(object sender, RoutedEventArgs e)
-        {
+        private async void Init()
+        { 
             CurrentManager = new UrlContentChangeCheckerManager();
+            MainList.ItemsSource = CurrentManager.UrlContentCheckerList;
             await CurrentManager.Init();
             //await CurrentManager.CheckAll();
-            MainList.ItemsSource = CurrentManager.UrlContentCheckerList;
         }
 
         private async void UpdateButtonClicked(object sender, TappedRoutedEventArgs e)
@@ -74,6 +76,7 @@ namespace WebContentChangeNotify
         private async void ReloadButtonClicked(object sender, TappedRoutedEventArgs e)
         {
             await CurrentManager.Init();
+            PageLoaded(null, null);
         }
 
         private async void ItemRefreshClicked(object sender, TappedRoutedEventArgs e)
@@ -86,6 +89,27 @@ namespace WebContentChangeNotify
         {
             var DataContext = (sender as AppBarButton).DataContext as UrlContentChangeChecker;
             CurrentManager.DeleteItem(DataContext.id);
+        }
+
+        private void PageLoaded(object sender, RoutedEventArgs e)
+        {
+            CurrentTimerInfo = new TimerInfo();
+            TimerSelectorEnable.IsOn = CurrentTimerInfo.Enabled;
+
+            var CurrentTimerSpan = (CurrentTimerInfo.TimerSpan);
+            var SelectedNow = TimerSpanSelector.Items.Where(m=> { return double.Parse((m as ComboBoxItem).Tag as string) == CurrentTimerSpan; });
+            if (SelectedNow.Count() == 0)
+                TimerSpanSelector.SelectedIndex = 3;
+            else
+                TimerSpanSelector.SelectedItem = SelectedNow.First();
+
+            TimerSpanSelector.SelectionChanged += TimerSpanChanged;
+        }
+
+        private void TimerSpanChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var Selector = sender as ComboBox;
+            CurrentTimerInfo.TimerSpan = double.Parse((Selector.SelectedItem as ComboBoxItem).Tag as string);
         }
     }
 }
