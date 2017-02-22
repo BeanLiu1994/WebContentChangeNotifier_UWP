@@ -45,10 +45,11 @@ namespace WebContentChangeNotify
             MainList.ItemsSource = CurrentManager.UrlContentCheckerList;
         }
 
-        private void UpdateButtonClicked(object sender, TappedRoutedEventArgs e)
+        private async void UpdateButtonClicked(object sender, TappedRoutedEventArgs e)
         {
             //await CurrentManager.CheckAll();
-            CurrentManager.CheckAll_NoWait();
+            foreach(var t in CurrentManager.CheckAll_NoWait())
+                await t;
         }
 
         private void CheckerItemClicked(object sender, ItemClickEventArgs e)
@@ -69,6 +70,10 @@ namespace WebContentChangeNotify
                 UI_url.Text = "";
             }
 
+        }
+        private async void ReloadButtonClicked(object sender, TappedRoutedEventArgs e)
+        {
+            await CurrentManager.Init();
         }
 
         private async void ItemRefreshClicked(object sender, TappedRoutedEventArgs e)

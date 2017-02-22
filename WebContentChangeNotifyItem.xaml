@@ -10,6 +10,11 @@
     <Page.Resources>
         <UrlCCCUtil:Nullable_boolRevertConverter x:Key="Nullable_boolRevertConverter"/>
     </Page.Resources>
+    <Page.Transitions>
+        <TransitionCollection>
+            <EdgeUIThemeTransition Edge="Bottom"/>
+        </TransitionCollection>
+    </Page.Transitions>
 
     <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
         <Grid.ColumnDefinitions>

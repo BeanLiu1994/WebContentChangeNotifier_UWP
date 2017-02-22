@@ -463,13 +463,14 @@ namespace WebContentChangeCheckerUtil
                 await m.CheckNow();
             }
         }
-        public void CheckAll_NoWait()
+        public List<Task> CheckAll_NoWait()
         {
+            var Tasks = new List<Task>();
             foreach (var m in UrlContentCheckerList)
             {
-                m.CheckNow();
+                Tasks.Add(m.CheckNow());
             }
-            Task.Delay(4500);
+            return Tasks;
         }
         public async Task<bool> AddItem(string id, string url)
         {

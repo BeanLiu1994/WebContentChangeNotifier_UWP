@@ -10,16 +10,31 @@
     <Page.Resources>
         <UrlCCCUtil:Nullable_boolRevertConverter x:Key="Nullable_boolRevertConverter"/>
     </Page.Resources>
+    <Page.Transitions>
+        <TransitionCollection>
+            <EdgeUIThemeTransition/>
+        </TransitionCollection>
+    </Page.Transitions>
 
     <Grid Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <GridView Name="MainList" SelectionMode="Single" IsItemClickEnabled="True" ItemClick="CheckerItemClicked" Grid.Row="1">
+        <GridView Name="MainList" SelectionMode="Single" IsItemClickEnabled="True" ItemClick="CheckerItemClicked" Grid.Row="1" Margin="5">
+            <GridView.ItemContainerStyle>
+                <Style TargetType="GridViewItem">
+                    <Setter Property="Margin" Value="5"/>
+                </Style>
+            </GridView.ItemContainerStyle>
+            <GridView.Transitions>
+                <TransitionCollection>
+                    <RepositionThemeTransition/>
+                </TransitionCollection>
+            </GridView.Transitions>
             <GridView.ItemTemplate>
                 <DataTemplate>
-                    <Grid>
+                    <Grid MinWidth="230" Background="{ThemeResource AppBarBackgroundThemeBrush}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
@@ -61,10 +76,15 @@
                 </AppBarButton.Flyout>
             </AppBarButton>
             <AppBarButton Icon="Refresh" Label="更新全部" Tapped="UpdateButtonClicked"/>
+            <CommandBar.Content>
+                <StackPanel HorizontalAlignment="Left">
+                    <TextBlock Text="网页内容变化自动检测" Margin="8,8,8,0"/>
+                    <TextBlock Text="v1.0" FontSize="12" Margin="8,0"/>
+                </StackPanel>
+            </CommandBar.Content>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton Icon="Sync" Label="重新加载" Tapped="ReloadButtonClicked"/>
+            </CommandBar.SecondaryCommands>
         </CommandBar>
-        <StackPanel HorizontalAlignment="Left">
-            <TextBlock Text="网页内容变化自动检测" Margin="8,8,8,0"/>
-            <TextBlock Text="v1.0" FontSize="12" Margin="8,0"/>
-        </StackPanel>
     </Grid>
 </Page>
