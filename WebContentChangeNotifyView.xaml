@@ -90,7 +90,7 @@
                             <StackPanel>
                                 <TextBlock Text="定时任务"/>
                                 <ToggleSwitch Name="TimerSelectorEnable" OffContent="关" OnContent="开"/>
-                                <TextBlock Text="设定间隔(分钟):"/>
+                                <TextBlock Text="设定间隔:"/>
                                 <ComboBox Name="TimerSpanSelector" HorizontalAlignment="Stretch" Margin="5">
                                     <ComboBoxItem Content="15Min" Tag="15"/>
                                     <ComboBoxItem Content="30Min" Tag="30"/>

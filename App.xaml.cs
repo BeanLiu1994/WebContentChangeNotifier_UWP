@@ -234,7 +234,7 @@ namespace WebContentChangeNotify
                 ApplicationData.Current.LocalSettings.Values[key] = _TimerSpan;
                 Debug.WriteLine("set: TimerSpan:" + value.ToString());
                 PropertyChangeEventHappen(nameof(TimerSpan));
-                //UpdateWorkRegister();
+                UpdateWorkRegister();
             }
         }
 
