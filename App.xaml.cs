@@ -38,7 +38,7 @@ namespace WebContentChangeNotify
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-            //RegisterWorks();
+            DetectLiveTileTask();
         }
 
         /// <summary>
@@ -133,20 +133,41 @@ namespace WebContentChangeNotify
 
             if (TimerInfoSaved.Enabled)
                 await RegisterLiveTileTask(
-                    "TimerTask",
+                    TimerInfoSaved.Name,
                     typeof(TileRefreshUtils).FullName,
                     new TimeTrigger(TimerInfoSaved.TimerSpan, false),
                     Timer_Condition
                 );
             else
                 await RegisterLiveTileTask(
-                    "TimerTask",
+                    TimerInfoSaved.Name,
                     typeof(TileRefreshUtils).FullName,
                     null,
                     null
                 );
         }
-
+        public static async Task DetectLiveTileTask()
+        {
+            var status = await BackgroundExecutionManager.RequestAccessAsync();
+            if (status == BackgroundAccessStatus.Unspecified || status == BackgroundAccessStatus.Denied)
+            {
+                return;
+            }
+            var CurrentTimerTask = new TimerInfo();
+            foreach (var t in BackgroundTaskRegistration.AllTasks)
+            {
+                Debug.WriteLine("检测到了名为" + t.Value.Name + "的后台任务");
+            }
+            if(CurrentTimerTask.Enabled)
+            { 
+                var TaskMatch = BackgroundTaskRegistration.AllTasks.Where(m => { return m.Value.Name == CurrentTimerTask.Name; });
+                if(TaskMatch.Count()==0)
+                {
+                    Debug.WriteLine("没有检测到名为" + CurrentTimerTask.Name + "的后台任务,更新记录");
+                    CurrentTimerTask.Enabled = false;
+                }
+            }
+        }
         //LiveTileSetting
         public static async Task RegisterLiveTileTask(string _Name, string _TaskEntryPoint, IBackgroundTrigger _Trigger, IBackgroundCondition[] _ConditionTable)
         {
@@ -193,6 +214,8 @@ namespace WebContentChangeNotify
     {
         const string key = "TimerTask";
         const string key_enabled = "TimerTaskEnabled";
+
+        public string Name { get { return key; } }
 
         private bool _Enabled;
         public bool Enabled

@@ -112,6 +112,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Toasts\Toasts.csproj">
+      <Project>{616b168e-f35c-4213-87f2-d9adb83ed70a}</Project>
+      <Name>Toasts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WebContentChangeCheckerUtil\WebContentChangeCheckerUtil.csproj">
       <Project>{ba0b9fb0-c00e-4bd5-aad7-546aaf123215}</Project>
       <Name>WebContentChangeCheckerUtil</Name>
