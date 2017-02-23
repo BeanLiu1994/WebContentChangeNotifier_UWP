@@ -55,7 +55,7 @@
                         </StackPanel>
                         <CommandBar Grid.Row="1" IsEnabled="{Binding Updating, Converter={StaticResource Nullable_boolRevertConverter}}">
                             <!--<AppBarToggleButton Icon="Accept" Label="激活" IsChecked="{Binding IsActivated, Mode=TwoWay}"/>-->
-                            <AppBarButton Icon="Refresh" Label="刷新" Tapped="ItemRefreshClicked"/>
+                            <AppBarButton Icon="Refresh" Label="刷新" Tapped="ItemRefreshClicked" IsEnabled="{Binding IsActivated}"/>
                             <AppBarButton Icon="Delete" Label="删除" Tapped="ItemDeleteClicked"/>
                         </CommandBar>
                     </Grid>

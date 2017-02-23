@@ -17,6 +17,18 @@ using Windows.UI.Xaml.Data;
 
 namespace WebContentChangeCheckerUtil
 {
+    public class Nullable_boolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return (value as bool?).GetValueOrDefault();
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return (value as bool?);
+        }
+    }
     public class Nullable_boolRevertConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)

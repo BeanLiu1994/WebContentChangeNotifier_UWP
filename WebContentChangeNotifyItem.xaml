@@ -9,6 +9,7 @@
     mc:Ignorable="d">
     <Page.Resources>
         <UrlCCCUtil:Nullable_boolRevertConverter x:Key="Nullable_boolRevertConverter"/>
+        <UrlCCCUtil:Nullable_boolConverter x:Key="Nullable_boolConverter"/>
     </Page.Resources>
     <Page.Transitions>
         <TransitionCollection>
@@ -44,20 +45,14 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
-                <Button Tapped="GetSnap" Margin="3,0" IsEnabled="{x:Bind Mode=OneWay, Path=CurrentChecker.Updating, Converter={StaticResource Nullable_boolRevertConverter}}">
-                    <Button.Content>
-                        <Grid>
-                            <ProgressBar VerticalAlignment="Top" Margin="0,-4,0,0" IsIndeterminate="{x:Bind CurrentChecker.Updating, Mode=OneWay}" IsEnabled="True" Background="#00000000"/>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Margin="3" FontFamily="Segoe MDL2 Assets" Text="&#xE72C;" VerticalAlignment="Center"/>
-                                <TextBlock Text="现在截取快照"/>
-                            </StackPanel>
-                        </Grid>
-                    </Button.Content>
-                </Button>
-                <CheckBox Content="激活" IsChecked="{x:Bind CurrentChecker.IsActivated, Mode=TwoWay}" Margin="3,0" IsEnabled="{x:Bind Mode=OneWay, Path=CurrentChecker.Updating, Converter={StaticResource Nullable_boolRevertConverter}}"/>
-            </StackPanel>
+            <CommandBar Grid.Row="1" IsEnabled="{x:Bind Mode=OneWay, Path=CurrentChecker.Updating, Converter={StaticResource Nullable_boolRevertConverter}}">
+                <AppBarButton Tapped="GetSnap" Margin="3,0" Label="截取快照" Icon="Refresh" IsEnabled="{x:Bind Mode=OneWay, Path=CurrentChecker.IsActivated, Converter={StaticResource Nullable_boolConverter}}">
+                    <AppBarButton.Content>
+                        <ProgressRing VerticalAlignment="Top" Margin="0,-4,0,0" IsActive="{x:Bind CurrentChecker.Updating, Mode=OneWay}" IsEnabled="True"/>
+                    </AppBarButton.Content>
+                </AppBarButton>
+                <AppBarToggleButton Icon="Accept" Label="激活" IsChecked="{x:Bind CurrentChecker.IsActivated, Mode=TwoWay}" Margin="3,0" IsEnabled="{x:Bind Mode=OneWay, Path=CurrentChecker.Updating, Converter={StaticResource Nullable_boolRevertConverter}}"/>
+            </CommandBar>
         </Grid>
         <WebView Name="WebContentShow" Grid.Column="1"/>
     </Grid>
