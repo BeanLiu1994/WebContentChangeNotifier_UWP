@@ -309,7 +309,6 @@ namespace WebContentChangeCheckerUtil
         {
             init();
             id = _id;
-            webURL = null;
         }
         public UrlContentChangeChecker(string _id, Uri _webURL)
         {
@@ -320,8 +319,10 @@ namespace WebContentChangeCheckerUtil
         protected void init()
         {
             UrlContentSnapList = new ObservableCollection<UrlContentSnap>();
-            IsActivated = true;
-            Updating = false;
+            _IsActivated = true;
+            _Updating = false;
+            _webURL = null;
+            _id = null;
         }
 
 
@@ -355,11 +356,14 @@ namespace WebContentChangeCheckerUtil
             try
             {
                 UrlInfo = await localStorageFolder.GetFileAsync("UrlInfo");
+                await UrlInfo.DeleteAsync();
+                UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
             }
             catch
             { 
                 UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
             }
+
             using (Stream file = await UrlInfo.OpenStreamForWriteAsync())
             {
                 using (StreamWriter write = new StreamWriter(file))
