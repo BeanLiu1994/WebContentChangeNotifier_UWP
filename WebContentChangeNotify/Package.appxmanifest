@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="14f811b3-3c4f-423f-9b83-19e93546d4c7" Publisher="CN=njuee_kgom" Version="1.0.6.0" />
-  <mp:PhoneIdentity PhoneProductId="14f811b3-3c4f-423f-9b83-19e93546d4c7" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="14f811b3-3c4f-423f-9b83-14393uwp" Publisher="CN=njuee_kgom" Version="1.0.8.0" />
+  <mp:PhoneIdentity PhoneProductId="059decea-184e-4474-bc30-e09036ec2446" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>WebContentChangeNotify</DisplayName>
     <PublisherDisplayName>BeanLiu</PublisherDisplayName>
@@ -19,16 +19,11 @@
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
-        <uap:InitialRotationPreference>
-          <uap:Rotation Preference="portrait" />
-          <uap:Rotation Preference="landscape" />
-          <uap:Rotation Preference="portraitFlipped" />
-          <uap:Rotation Preference="landscapeFlipped" />
-        </uap:InitialRotationPreference>
       </uap:VisualElements>
       <Extensions>
         <Extension Category="windows.backgroundTasks" EntryPoint="TileRefresh.TileRefreshUtils">
           <BackgroundTasks>
+            <Task Type="systemEvent" />
             <Task Type="timer" />
           </BackgroundTasks>
         </Extension>

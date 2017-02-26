@@ -53,7 +53,7 @@ namespace WebContentChangeNotify
 
         public async void BindItemsSource(bool ForceUpdate = true)
         {
-            if(ForceUpdate)
+            if (ForceUpdate)
                 await CurrentChecker.CheckExistance();
             TimeLineContainer.ItemsSource = CurrentChecker.UrlContentSnapList;
             if (TimeLineContainer.Items.Count > 0)
