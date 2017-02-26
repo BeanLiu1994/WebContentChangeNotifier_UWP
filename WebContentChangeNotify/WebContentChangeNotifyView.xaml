@@ -108,6 +108,20 @@
                         </Flyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>
+                <AppBarButton Icon="Help" Label="关于">
+                    <AppBarButton.Flyout>
+                        <Flyout Placement="Left" >
+                            <StackPanel>
+                                <Image Source="Assets/StoreLogo.png" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="None" Tapped="OpenStore"/>
+                                <TextBlock Text="关于" FontSize="24" HorizontalAlignment="Center" Margin="5"/>
+                                <TextBlock Text="{x:Bind Path=ApplicationName}"/>
+                                <TextBlock Text="{x:Bind Path=ApplicationVersion}"/>
+                                <TextBlock Text="{x:Bind Path=InstallDatetime}"/>
+                                <Button Content="给我评价" Tapped="OpenReview" HorizontalAlignment="Center" Margin="10"/>
+                            </StackPanel>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Grid>

@@ -19,6 +19,7 @@ using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.Storage;
 using Microsoft.Toolkit.Uwp.Helpers;
+using System.Diagnostics;
 
 // “空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=234238 上有介绍
 
@@ -31,7 +32,9 @@ namespace WebContentChangeNotify
     {
         UrlContentChangeCheckerManager CurrentManager;
         public TimerInfo CurrentTimerInfo { get; private set; }
-        public string ApplicationVersion => $"Version: {SystemInformation.ApplicationVersion.Major}.{SystemInformation.ApplicationVersion.Minor}.{SystemInformation.ApplicationVersion.Build}";
+        public string ApplicationName => $"{Windows.ApplicationModel.Package.Current.DisplayName}";
+        public string ApplicationVersion => $"版本:        {SystemInformation.ApplicationVersion.Major}.{SystemInformation.ApplicationVersion.Minor}.{SystemInformation.ApplicationVersion.Build} [{SystemInformation.OperatingSystemArchitecture}]";
+        public string InstallDatetime =>    $"安装日期: { Windows.ApplicationModel.Package.Current.InstalledDate.DateTime}";
 
         public WebContentChangeNotifyView()
         {
@@ -114,5 +117,22 @@ namespace WebContentChangeNotify
             var Selector = sender as ComboBox;
             CurrentTimerInfo.TimerSpan = uint.Parse((Selector.SelectedItem as ComboBoxItem).Tag as string);
         }
+
+
+
+        private async void OpenStore(object sender, TappedRoutedEventArgs e)
+        {
+            var uri = new Uri("ms-windows-store://pdp/?ProductId=9NBLGGH5JDWG");
+            await Windows.System.Launcher.LaunchUriAsync(uri);
+            Debug.WriteLine("打开了商店页面");
+        }
+
+        private async void OpenReview(object sender, TappedRoutedEventArgs e)
+        {
+            var uri = new Uri("ms-windows-store://review/?ProductId=9NBLGGH5JDWG");
+            await Windows.System.Launcher.LaunchUriAsync(uri);
+            Debug.WriteLine("打开了商店页面");
+        }
+
     }
 }
