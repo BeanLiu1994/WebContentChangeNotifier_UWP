@@ -38,7 +38,6 @@ namespace WebContentChangeNotify
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-            DetectLiveTileTask();
         }
 
         /// <summary>
@@ -86,6 +85,7 @@ namespace WebContentChangeNotify
                 }
                 // 确保当前窗口处于活动状态
                 Window.Current.Activate();
+                DetectLiveTileTask();
             }
         }
         private void OnNavigated(object sender, NavigationEventArgs e)

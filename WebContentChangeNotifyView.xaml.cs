@@ -39,12 +39,12 @@ namespace WebContentChangeNotify
             Init();
         }
 
-        private async void Init()
+        private Task Init()
         { 
             CurrentManager = new UrlContentChangeCheckerManager();
             MainList.ItemsSource = CurrentManager.UrlContentCheckerList;
-            await CurrentManager.Init();
-            //await CurrentManager.CheckAll();
+            var task = CurrentManager.Init();
+            return task;
         }
 
         private async void UpdateButtonClicked(object sender, TappedRoutedEventArgs e)
