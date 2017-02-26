@@ -364,14 +364,16 @@ namespace WebContentChangeCheckerUtil
                 UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
             }
 
-            using (Stream file = await UrlInfo.OpenStreamForWriteAsync())
-            {
-                using (StreamWriter write = new StreamWriter(file))
+            if (webURL != null)
+                using (Stream file = await UrlInfo.OpenStreamForWriteAsync())
                 {
-                    write.WriteLine(webURL);
-                    write.WriteLine(IsActivated.ToString());
+                    using (StreamWriter write = new StreamWriter(file))
+                    {
+                        write.WriteLine(webURL.OriginalString);
+                        write.WriteLine(IsActivated.ToString());
+                    }
                 }
-            }
+
             Updating = false;
             return UrlInfo;
         }

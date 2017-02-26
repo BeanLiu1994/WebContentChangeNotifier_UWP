@@ -143,7 +143,7 @@ namespace WebContentChangeNotify
         public static async Task DetectLiveTileTask()
         {
             var status = await BackgroundExecutionManager.RequestAccessAsync();
-            if (status == BackgroundAccessStatus.Unspecified || status == BackgroundAccessStatus.DeniedByUser || status == BackgroundAccessStatus.DeniedByUser)
+            if (status == BackgroundAccessStatus.Unspecified || status == BackgroundAccessStatus.Denied)
             {
                 return;
             }
@@ -173,7 +173,7 @@ namespace WebContentChangeNotify
             };
             //清除已有的
             var status = await BackgroundExecutionManager.RequestAccessAsync();
-            if (status == BackgroundAccessStatus.Unspecified || status == BackgroundAccessStatus.DeniedByUser || status == BackgroundAccessStatus.DeniedByUser)
+            if (status == BackgroundAccessStatus.Unspecified || status == BackgroundAccessStatus.Denied)
             {
                 return;
             }
