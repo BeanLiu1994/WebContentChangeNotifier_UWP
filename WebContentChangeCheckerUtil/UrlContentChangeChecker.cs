@@ -353,18 +353,19 @@ namespace WebContentChangeCheckerUtil
         {
             StorageFile UrlInfo;
             Updating = true;
-            try
-            {
-                UrlInfo = await localStorageFolder.GetFileAsync("UrlInfo");
-                await UrlInfo.DeleteAsync();
-                UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
-            }
-            catch
-            { 
-                UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
-            }
 
             if (webURL != null)
+            {
+                try
+                {
+                    UrlInfo = await localStorageFolder.GetFileAsync("UrlInfo");
+                    await UrlInfo.DeleteAsync();
+                    UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
+                }
+                catch
+                {
+                    UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
+                }
                 using (Stream file = await UrlInfo.OpenStreamForWriteAsync())
                 {
                     using (StreamWriter write = new StreamWriter(file))
@@ -373,6 +374,9 @@ namespace WebContentChangeCheckerUtil
                         write.WriteLine(IsActivated.ToString());
                     }
                 }
+            }
+            else
+                UrlInfo = null;
 
             Updating = false;
             return UrlInfo;
@@ -429,6 +433,7 @@ namespace WebContentChangeCheckerUtil
             if (UrlContentSnapList.Count > 0 && CompareToRecentRecord(UrlContentSnapList.First(), newOne))
             {//same
                 UrlContentSnapList.First().TimeStamp.Insert(0,DateTime.Now);
+                UrlContentSnapList.First().PropertyChangeEventHappen("TimeStampShowOut");
                 await UrlContentSnapList.First().SaveToFile(SaveMode.Update);
             }
             else
