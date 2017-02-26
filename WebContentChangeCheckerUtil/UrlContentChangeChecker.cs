@@ -75,8 +75,8 @@ namespace WebContentChangeCheckerUtil
                 PropertyChangeEventHappen(nameof(Url));
             }
         }
-
-        public ObservableCollection<DateTime> _TimeStamp;
+        
+        private ObservableCollection<DateTime> _TimeStamp;
         public ObservableCollection<DateTime> TimeStamp
         {
             get { return _TimeStamp; }
@@ -87,11 +87,35 @@ namespace WebContentChangeCheckerUtil
             }
         }
 
+        private bool _ShrinkUI;
+        public bool ShrinkUI
+        {
+            get { return _ShrinkUI; }
+            set
+            {
+                _ShrinkUI = value;
+                PropertyChangeEventHappen(nameof(ShrinkUI));
+                PropertyChangeEventHappen(nameof(TimeStampShowOut));
+            }
+        }
+
+        
+        public ObservableCollection<DateTime> TimeStampShowOut
+        {
+            get {
+                if (ShrinkUI && TimeStamp.Count > 1)
+                    return new ObservableCollection<DateTime>() { TimeStamp.First(), TimeStamp.Last() };
+                else
+                    return TimeStamp;
+            }
+        }
+
         public string ContentFile { get; protected set; }
         public string Content { get; set; }
 
         public UrlContentSnap()
         {
+            ShrinkUI = true;
             TimeStamp = new ObservableCollection<DateTime>();
         }
 

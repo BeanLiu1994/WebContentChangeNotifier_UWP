@@ -29,18 +29,13 @@
             </Grid.RowDefinitions>
             <ListView Name="TimeLineContainer" ItemClick="ItemClicked" SelectionChanged="ItemSelectionChanged" MaxWidth="350">
                 <ListView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="UrlCCCUtil:UrlContentSnap">
                         <StackPanel Margin="8">
                             <TextBlock Text="目标网址:"/>
-                            <TextBox Text="{Binding Url}" Margin="0,0,0,10" FontWeight="Bold" IsReadOnly="True" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False"/>
+                            <TextBox Text="{x:Bind Path=Url,Mode=OneWay}" Margin="0,0,0,10" FontWeight="Bold" IsReadOnly="True" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False"/>
                             <TextBlock Text="最近截取时间:"/>
-                            <ListBox ItemsSource="{Binding TimeStamp}" HorizontalAlignment="Stretch" Margin="10" IsHitTestVisible="False" IsTabStop="False" Background="#00000000">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding}" FontWeight="Bold" ></TextBlock>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
+                            <ToggleButton Content="Expand" IsChecked="{x:Bind Path=ShrinkUI,Mode=TwoWay,Converter={StaticResource Nullable_boolConverter}}"/>
+                            <ListBox ItemsSource="{x:Bind Path=TimeStampShowOut,Mode=OneWay}" HorizontalAlignment="Stretch" Margin="10" IsHitTestVisible="False" IsTabStop="False" Background="#00000000"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>

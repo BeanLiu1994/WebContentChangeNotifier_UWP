@@ -42,6 +42,7 @@ namespace WebContentChangeNotify
 
         public void SelectChecker(UrlContentChangeChecker UrlChecker)
         {
+            if (UrlChecker == null) return;
             CurrentChecker = UrlChecker;
             var view = ApplicationView.GetForCurrentView();
             if (UrlChecker.webURL.OriginalString.Count() > 24)

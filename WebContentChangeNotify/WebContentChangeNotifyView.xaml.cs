@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.Storage;
+using Microsoft.Toolkit.Uwp.Helpers;
 
 // “空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=234238 上有介绍
 
@@ -30,6 +31,8 @@ namespace WebContentChangeNotify
     {
         UrlContentChangeCheckerManager CurrentManager;
         public TimerInfo CurrentTimerInfo { get; private set; }
+        public string ApplicationVersion => $"Version: {SystemInformation.ApplicationVersion.Major}.{SystemInformation.ApplicationVersion.Minor}.{SystemInformation.ApplicationVersion.Build}";
+
         public WebContentChangeNotifyView()
         {
             this.InitializeComponent();
