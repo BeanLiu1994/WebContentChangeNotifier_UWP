@@ -24,7 +24,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <GridView Name="MainList" IsItemClickEnabled="True" ItemClick="CheckerItemClicked" Grid.Row="1" Margin="5"
+        <GridView Name="MainList" IsItemClickEnabled="True" ItemClick="CheckerItemClicked" Grid.Row="1"
                   animations:ReorderGridAnimation.Duration="300">
             <GridView.ItemContainerStyle>
                 <Style TargetType="GridViewItem">

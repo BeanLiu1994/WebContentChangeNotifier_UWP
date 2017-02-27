@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="UrlContentChangeChecker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebContentFetcher.cs" />
     <EmbeddedResource Include="Properties\WebContentChangeCheckerUtil.rd.xml" />
   </ItemGroup>
   <ItemGroup>

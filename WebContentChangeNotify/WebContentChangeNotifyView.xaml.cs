@@ -42,15 +42,24 @@ namespace WebContentChangeNotify
             var view = ApplicationView.GetForCurrentView();
             view.Title = "网页内容变化检测";
             NavigationCacheMode = NavigationCacheMode.Enabled;
-            Init();
         }
 
-        private Task Init()
-        { 
-            CurrentManager = new UrlContentChangeCheckerManager();
-            MainList.ItemsSource = CurrentManager.UrlContentCheckerList;
-            var task = CurrentManager.Init();
-            return task;
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if(e.NavigationMode != NavigationMode.Back)
+                Init();
+            base.OnNavigatedTo(e);
+        }
+        private async Task Init()
+        {
+            if(CurrentManager==null)
+            { 
+                CurrentManager = new UrlContentChangeCheckerManager();
+                MainList.ItemsSource = CurrentManager.UrlContentCheckerList;
+            }
+            await Task.Delay(10);
+            await CurrentManager.Init();
+            return;
         }
 
         private async void UpdateButtonClicked(object sender, TappedRoutedEventArgs e)
@@ -123,14 +132,14 @@ namespace WebContentChangeNotify
         private async void OpenStore(object sender, TappedRoutedEventArgs e)
         {
             var uri = new Uri("ms-windows-store://pdp/?ProductId=9NBLGGH5JDWG");
-            await Windows.System.Launcher.LaunchUriAsync(uri);
+            //await Windows.System.Launcher.LaunchUriAsync(uri);
             Debug.WriteLine("打开了商店页面");
         }
 
         private async void OpenReview(object sender, TappedRoutedEventArgs e)
         {
             var uri = new Uri("ms-windows-store://review/?ProductId=9NBLGGH5JDWG");
-            await Windows.System.Launcher.LaunchUriAsync(uri);
+            //await Windows.System.Launcher.LaunchUriAsync(uri);
             Debug.WriteLine("打开了商店页面");
         }
 
