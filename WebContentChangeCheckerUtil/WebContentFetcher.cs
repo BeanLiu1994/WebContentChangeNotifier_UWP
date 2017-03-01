@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WebContentChangeCheckerUtil
 {
-    class WebContentFetcher
+    public class WebContentFetcher//不能用于后台?
     {
         Windows.UI.Xaml.Controls.WebView WebViewInstance;
         public string HtmlContent { get; protected set; }

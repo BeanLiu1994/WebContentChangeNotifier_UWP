@@ -22,8 +22,7 @@ namespace TileRefresh
             var TaskNow = new UrlContentChangeCheckerManager();
             await TaskNow.Init();
             var Tasks = TaskNow.CheckAll_NoWait();
-            foreach (var t in Tasks)
-                await t;
+            Task.WaitAll(Tasks.ToArray());
             Debug.WriteLine("结束任务");
             //ToastsDef.SendNotification_TwoString("后台任务结束", "当前时间" + DateTime.Now.ToString());
 

@@ -344,14 +344,42 @@ namespace WebContentChangeCheckerUtil
             }
             catch
             {
-                UrlInfo = await SaveUrlInfo();
+                UrlInfo = await CreateUrlInfo();
             }
+            Updating = false;
+            return UrlInfo;
+        }
+        public async Task<StorageFile> CreateUrlInfo()
+        {
+            StorageFile UrlInfo = null;
+            Updating = true;
+
+            if (webURL != null)
+            {
+                try
+                {
+                    UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
+                    using (Stream file = await UrlInfo.OpenStreamForWriteAsync())
+                    {
+                        using (StreamWriter write = new StreamWriter(file))
+                        {
+                            write.WriteLine(webURL.OriginalString);
+                            write.WriteLine(IsActivated.ToString());
+                        }
+                    }
+                }
+                catch
+                {
+                    Debug.WriteLine("UrlInfo 不能创建文件.");
+                }
+            }
+
             Updating = false;
             return UrlInfo;
         }
         public async Task<StorageFile> SaveUrlInfo()
         {
-            StorageFile UrlInfo;
+            StorageFile UrlInfo = null;
             Updating = true;
 
             if (webURL != null)
@@ -359,24 +387,20 @@ namespace WebContentChangeCheckerUtil
                 try
                 {
                     UrlInfo = await localStorageFolder.GetFileAsync("UrlInfo");
-                    await UrlInfo.DeleteAsync();
-                    UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
+                    using (Stream file = await UrlInfo.OpenStreamForWriteAsync())
+                    {
+                        using (StreamWriter write = new StreamWriter(file))
+                        {
+                            write.WriteLine(webURL.OriginalString);
+                            write.WriteLine(IsActivated.ToString());
+                        }
+                    }
                 }
                 catch
                 {
-                    UrlInfo = await localStorageFolder.CreateFileAsync("UrlInfo");
-                }
-                using (Stream file = await UrlInfo.OpenStreamForWriteAsync())
-                {
-                    using (StreamWriter write = new StreamWriter(file))
-                    {
-                        write.WriteLine(webURL.OriginalString);
-                        write.WriteLine(IsActivated.ToString());
-                    }
+                    UrlInfo = await CreateUrlInfo();
                 }
             }
-            else
-                UrlInfo = null;
 
             Updating = false;
             return UrlInfo;
@@ -422,7 +446,7 @@ namespace WebContentChangeCheckerUtil
             if (localStorageFolder == null || webURL == null || IsActivated == false) return;
             Updating = true;
             //string Content = await GetFromUrl(webURL);
-            string Content = await Fetcher.FetchContent(webURL);
+            string Content = await GetFromUrl(webURL);
 
             if (Content.Count() == 0)
             { Updating = false; return; }
@@ -447,30 +471,31 @@ namespace WebContentChangeCheckerUtil
             recentStamp = newOne.TimeStamp[0].ToString();
             Updating = false;
         }
-        //protected async Task<string> GetFromUrl(Uri url)
-        //{
-        //    string result = "";
-        //    var cts = new CancellationTokenSource();
-        //    cts.CancelAfter(TimeSpan.FromSeconds(4));//设置延时时间4s
-        //    try
-        //    {
-        //        HttpClient myHC = new HttpClient();
-        //        HttpResponseMessage response = await myHC.GetAsync(url, cts.Token);
-        //        result = await response.Content.ReadAsStringAsync();
-        //    }
-        //    catch (TaskCanceledException e)
-        //    {
-        //        Debug.WriteLine("连接超时");
-        //        Debug.WriteLine(e.Message);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Debug.WriteLine("exception!!");
-        //        Debug.WriteLine(e.Message);
-        //    }
-        //    //返回结果网页（html）代码
-        //    return result;
-        //}
+        protected async Task<string> GetFromUrl(Uri url)
+        {
+            string result = "";
+            var cts = new CancellationTokenSource();
+            cts.CancelAfter(TimeSpan.FromSeconds(4));//设置延时时间4s
+            try
+            {
+                HttpClient myHC = new HttpClient();
+                HttpResponseMessage response = await myHC.GetAsync(url, cts.Token);
+                result = await response.Content.ReadAsStringAsync();
+            }
+            catch (TaskCanceledException e)
+            {
+                Debug.WriteLine("连接超时");
+                Debug.WriteLine(e.Message);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("exception!!");
+                Debug.WriteLine(e.Message);
+                //result = await Fetcher.FetchContent(webURL);
+            }
+            //返回结果网页（html）代码
+            return result;
+        }
         bool CompareToRecentRecord(UrlContentSnap RecentSnap, UrlContentSnap newOne)
         {
             return (RecentSnap.Content == newOne.Content) && (RecentSnap.Url == newOne.Url);
