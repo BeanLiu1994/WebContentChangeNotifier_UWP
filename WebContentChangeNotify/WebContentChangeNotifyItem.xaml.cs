@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
@@ -17,6 +18,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.UI.ViewManagement;
 using Windows.UI.Core;
+using Windows.UI.Composition;
 
 // “空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=234238 上有介绍
 
@@ -95,6 +97,9 @@ namespace WebContentChangeNotify
                     }
                 };
             base.OnNavigatedTo(e);
+            var Animation = ConnectedAnimationService.GetForCurrentView().GetAnimation("ID");
+            ConnectedAnimationService.GetForCurrentView().DefaultDuration = new TimeSpan(0,0,0,0,256);
+            Animation?.TryStart(ID);
         }
     }
 }

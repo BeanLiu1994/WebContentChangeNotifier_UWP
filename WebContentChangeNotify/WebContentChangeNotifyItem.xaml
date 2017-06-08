@@ -11,11 +11,6 @@
         <UrlCCCUtil:Nullable_boolRevertConverter x:Key="Nullable_boolRevertConverter"/>
         <UrlCCCUtil:Nullable_boolConverter x:Key="Nullable_boolConverter"/>
     </Page.Resources>
-    <Page.Transitions>
-        <TransitionCollection>
-            <EdgeUIThemeTransition Edge="Bottom"/>
-        </TransitionCollection>
-    </Page.Transitions>
 
     <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
         <Grid.ColumnDefinitions>
@@ -24,10 +19,15 @@
         </Grid.ColumnDefinitions>
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <ListView Name="TimeLineContainer" ItemClick="ItemClicked" SelectionChanged="ItemSelectionChanged" MaxWidth="350">
+            <StackPanel Name="ID" Orientation="Horizontal" Margin="10">
+                <TextBlock Text="任务ID:" FontSize="24" Margin="0,0,10,0"/>
+                <TextBlock Text="{x:Bind Path=CurrentChecker.id,Mode=OneWay}" FontSize="24" FontWeight="Bold"/>
+            </StackPanel>
+            <ListView Grid.Row="1" Name="TimeLineContainer" ItemClick="ItemClicked" SelectionChanged="ItemSelectionChanged" MaxWidth="350">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="UrlCCCUtil:UrlContentSnap">
                         <StackPanel Margin="8">
@@ -40,7 +40,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <CommandBar Grid.Row="1" IsEnabled="{x:Bind Mode=OneWay, Path=CurrentChecker.Updating, Converter={StaticResource Nullable_boolRevertConverter}}">
+            <CommandBar Grid.Row="2" IsEnabled="{x:Bind Mode=OneWay, Path=CurrentChecker.Updating, Converter={StaticResource Nullable_boolRevertConverter}}">
                 <AppBarButton Tapped="GetSnap" Margin="3,0" Label="截取快照" Icon="Refresh" IsEnabled="{x:Bind Mode=OneWay, Path=CurrentChecker.IsActivated, Converter={StaticResource Nullable_boolConverter}}">
                     <AppBarButton.Content>
                         <ProgressRing VerticalAlignment="Top" Margin="0,-4,0,0" IsActive="{x:Bind CurrentChecker.Updating, Mode=OneWay}" IsEnabled="True"/>

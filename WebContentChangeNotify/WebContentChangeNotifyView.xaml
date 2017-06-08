@@ -8,10 +8,13 @@
     mc:Ignorable="d" 
     xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
     xmlns:UrlCCCUtil="using:WebContentChangeCheckerUtil"
+    xmlns:media="using:Windows.UI.Xaml.Media"
     Loaded="PageLoaded">
     <Page.Resources>
         <UrlCCCUtil:Nullable_boolRevertConverter x:Key="Nullable_boolRevertConverter"/>
         <UrlCCCUtil:Nullable_boolConverter x:Key="Nullable_boolConverter"/>
+        <media:SolidColorBrush x:Key="ArcylicBrush_mine" Color="LightGray"/>
+        <!--<media:AcrylicBrush x:Key="ArcylicBrush_mine" BackgroundSource="HostBackdrop" TintColor="Gray" TintOpacity="0.6" FallbackColor="Gray"/>-->
     </Page.Resources>
     <Page.Transitions>
         <TransitionCollection>
@@ -19,7 +22,7 @@
         </TransitionCollection>
     </Page.Transitions>
 
-    <Grid Background="{ThemeResource SystemControlBackgroundAltMediumLowBrush}">
+    <Grid Background="{StaticResource ArcylicBrush_mine}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>

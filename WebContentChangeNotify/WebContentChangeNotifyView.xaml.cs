@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using WebContentChangeCheckerUtil;
 using System.Threading.Tasks;
@@ -44,11 +45,11 @@ namespace WebContentChangeNotify
             NavigationCacheMode = NavigationCacheMode.Enabled;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            if(e.NavigationMode != NavigationMode.Back)
-                Init();
             base.OnNavigatedTo(e);
+            if(e.NavigationMode != NavigationMode.Back)
+                await Init();
         }
         private async Task Init()
         {
@@ -71,6 +72,8 @@ namespace WebContentChangeNotify
 
         private void CheckerItemClicked(object sender, ItemClickEventArgs e)
         {
+            var item = MainList.ContainerFromItem(e.ClickedItem) as GridViewItem;
+            ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("ID", item);
             (Window.Current.Content as Frame).Navigate(typeof(WebContentChangeNotifyItem), CurrentManager.UrlContentCheckerList.ElementAt((sender as GridView).Items.IndexOf(e.ClickedItem)));
         }
 
@@ -131,15 +134,15 @@ namespace WebContentChangeNotify
 
         private async void OpenStore(object sender, TappedRoutedEventArgs e)
         {
-            var uri = new Uri("ms-windows-store://pdp/?ProductId=9NBLGGH5JDWG");
-            //await Windows.System.Launcher.LaunchUriAsync(uri);
+            var uri = new Uri("ms-windows-store://pdp/?ProductId=9mz0h14d72bl");
+            await Windows.System.Launcher.LaunchUriAsync(uri);
             Debug.WriteLine("打开了商店页面");
         }
 
         private async void OpenReview(object sender, TappedRoutedEventArgs e)
         {
-            var uri = new Uri("ms-windows-store://review/?ProductId=9NBLGGH5JDWG");
-            //await Windows.System.Launcher.LaunchUriAsync(uri);
+            var uri = new Uri("ms-windows-store://review/?ProductId=9mz0h14d72bl");
+            await Windows.System.Launcher.LaunchUriAsync(uri);
             Debug.WriteLine("打开了商店页面");
         }
 
