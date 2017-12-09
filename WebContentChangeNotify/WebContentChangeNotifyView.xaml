@@ -13,6 +13,12 @@
         <UrlCCCUtil:Nullable_boolRevertConverter x:Key="Nullable_boolRevertConverter"/>
         <UrlCCCUtil:Nullable_boolConverter x:Key="Nullable_boolConverter"/>
     </Page.Resources>
+    <Page.Transitions>
+        <TransitionCollection>
+            <EdgeUIThemeTransition/>
+        </TransitionCollection>
+    </Page.Transitions>
+
     <Grid Background="{ThemeResource SystemControlBaseLowAcrylicWindowBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -58,7 +64,7 @@
             </GridView.ItemTemplate>
         </GridView>
         <CommandBar TabFocusNavigation="Cycle">
-            <AppBarButton Icon="Add" Label="添加">
+            <AppBarButton Icon="Add" Label="添加" AllowFocusOnInteraction="True">
                 <AppBarButton.Flyout>
                     <Flyout>
                         <StackPanel MaxWidth="250">
@@ -79,14 +85,14 @@
             </CommandBar.Content>
             <CommandBar.SecondaryCommands>
                 <AppBarButton Icon="Sync" Label="重新加载" Tapped="ReloadButtonClicked"/>
-                <AppBarButton Icon="ReShare" Label="定时任务">
+                <AppBarButton Icon="ReShare" Label="定时任务" AllowFocusOnInteraction="True">
                     <AppBarButton.Flyout>
                         <Flyout>
                             <StackPanel>
                                 <TextBlock Text="定时任务"/>
                                 <ToggleSwitch Name="TimerSelectorEnable" OffContent="关" OnContent="开"/>
                                 <TextBlock Text="设定间隔:"/>
-                                <ComboBox Name="TimerSpanSelector" HorizontalAlignment="Stretch" Margin="5">
+                                <ComboBox Name="TimerSpanSelector" HorizontalAlignment="Stretch" Margin="5" PlaceholderText="1h(default)" >
                                     <ComboBoxItem Content="15Min" Tag="15"/>
                                     <ComboBoxItem Content="30Min" Tag="30"/>
                                     <ComboBoxItem Content="45Min" Tag="45"/>

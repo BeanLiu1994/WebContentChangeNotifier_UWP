@@ -74,10 +74,13 @@ namespace WebContentChangeNotify
             var Timer_Condition = new IBackgroundCondition[]{
                 new SystemCondition(SystemConditionType.FreeNetworkAvailable)
             };
+
+            bool HasRegistered = BackgroundTaskHelper.IsBackgroundTaskRegistered(typeof(TileRefreshUtils));
+
             if (Enabled)
-                BackgroundTaskHelper.Register(Name, typeof(TileRefreshUtils).FullName, new TimeTrigger(TimerSpan, false), false, true, Timer_Condition);
-            else
-                BackgroundTaskHelper.Register(Name, typeof(TileRefreshUtils).FullName, null, false, true, Timer_Condition);
+                BackgroundTaskHelper.Register(typeof(TileRefreshUtils), new TimeTrigger(TimerSpan, false), false, true, Timer_Condition);
+            else if (HasRegistered)
+                BackgroundTaskHelper.Unregister(typeof(TileRefreshUtils));
         }
     }
 }
