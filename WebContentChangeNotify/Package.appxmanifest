@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="56225BeanLiu.14175B6F9F566" Publisher="CN=njuee_kgom" Version="1.1.6.0" />
-  <mp:PhoneIdentity PhoneProductId="f457ebba-a007-4bad-89af-4efee822df8f" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="56225BeanLiu.14175B6F9F566" Publisher="CN=E6F96611-EA3B-4493-ABD7-240D787880FE" Version="1.1.6.0" />
+  <mp:PhoneIdentity PhoneProductId="3b947aad-d9c9-4f57-ab93-b514aeff8fc6" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>可能不太靠谱的网页内容变化定期检测</DisplayName>
     <PublisherDisplayName>BeanLiu</PublisherDisplayName>
