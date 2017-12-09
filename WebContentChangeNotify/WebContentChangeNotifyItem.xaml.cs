@@ -83,23 +83,17 @@ namespace WebContentChangeNotify
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             SelectChecker(e.Parameter as UrlContentChangeChecker);
-            SystemNavigationManager.GetForCurrentView().BackRequested +=
-                (sender, param) =>
-                {
-                    Frame rootFrame = Window.Current.Content as Frame;
-
-                    if (rootFrame != null && rootFrame.CanGoBack)
-                    {
-                        param.Handled = true;
-                        rootFrame.GoBack();
-                        var view = ApplicationView.GetForCurrentView();
-                        view.Title = "网页内容变化检测";
-                    }
-                };
+            
             base.OnNavigatedTo(e);
+
             var Animation = ConnectedAnimationService.GetForCurrentView().GetAnimation("ID");
-            ConnectedAnimationService.GetForCurrentView().DefaultDuration = new TimeSpan(0,0,0,0,256);
+            ConnectedAnimationService.GetForCurrentView().DefaultDuration = new TimeSpan(0, 0, 0, 0, 256);
             Animation?.TryStart(ID);
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("ID_back", ID);
         }
     }
 }

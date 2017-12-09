@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using WebContentChangeCheckerUtil;
 using Windows.ApplicationModel.Background;
-using Toasts;
 using Windows.Storage;
 using System.IO;
 

@@ -47,9 +47,17 @@ namespace WebContentChangeNotify
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            base.OnNavigatedTo(e);
-            if(e.NavigationMode != NavigationMode.Back)
+            var view = ApplicationView.GetForCurrentView();
+            view.Title = "网页内容变化检测";
+            if (e.NavigationMode != NavigationMode.Back)
                 await Init();
+            else
+            {
+                var Animation = ConnectedAnimationService.GetForCurrentView().GetAnimation("ID_back");
+                ConnectedAnimationService.GetForCurrentView().DefaultDuration = new TimeSpan(0, 0, 0, 0, 256);
+                Animation?.TryStart(LastClickedItem);
+            }
+            base.OnNavigatedTo(e);
         }
         private async Task Init()
         {
@@ -70,10 +78,12 @@ namespace WebContentChangeNotify
                 await t;
         }
 
+        private UIElement LastClickedItem;
         private void CheckerItemClicked(object sender, ItemClickEventArgs e)
         {
-            var item = MainList.ContainerFromItem(e.ClickedItem) as GridViewItem;
-            ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("ID", item);
+            LastClickedItem = MainList.ContainerFromItem(e.ClickedItem) as GridViewItem;
+            ConnectedAnimationService.GetForCurrentView().PrepareToAnimate("ID", LastClickedItem);
+
             (Window.Current.Content as Frame).Navigate(typeof(WebContentChangeNotifyItem), CurrentManager.UrlContentCheckerList.ElementAt((sender as GridView).Items.IndexOf(e.ClickedItem)));
         }
 

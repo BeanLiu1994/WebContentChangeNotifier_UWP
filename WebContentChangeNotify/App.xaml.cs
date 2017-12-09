@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using TileRefresh;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.ApplicationModel.Background;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.Storage;
 using Windows.UI.Core;
-using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -79,16 +72,18 @@ namespace WebContentChangeNotify
                 }
                 // 确保当前窗口处于活动状态
                 Window.Current.Activate();
-                DetectLiveTileTask();
             }
-        }
-        private void OnNavigated(object sender, NavigationEventArgs e)
-        {
-            // Each time a navigation event occurs, update the Back button's visibility
-            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
-                ((Frame)sender).CanGoBack ?
-                AppViewBackButtonVisibility.Visible :
-                AppViewBackButtonVisibility.Collapsed;
+            SystemNavigationManager.GetForCurrentView().BackRequested +=
+                (o, v) =>
+                {
+                    Frame f = Window.Current.Content as Frame;
+
+                    if (f != null && f.CanGoBack)
+                    {
+                        v.Handled = true;
+                        f.GoBack();
+                    }
+                };
         }
 
         /// <summary>
@@ -116,154 +111,13 @@ namespace WebContentChangeNotify
         }
 
 
-        public async static void RegisterWorks(TimerInfo TimerInfoSaved = null)
+        private void OnNavigated(object sender, NavigationEventArgs e)
         {
-            var Timer_Condition = new IBackgroundCondition[]{
-                new SystemCondition(SystemConditionType.FreeNetworkAvailable)
-            };
-
-            if(TimerInfoSaved==null)
-                TimerInfoSaved = new TimerInfo();
-
-            if (TimerInfoSaved.Enabled)
-                await RegisterLiveTileTask(
-                    TimerInfoSaved.Name,
-                    typeof(TileRefreshUtils).FullName,
-                    new TimeTrigger(TimerInfoSaved.TimerSpan, false),
-                    Timer_Condition
-                );
-            else
-                await RegisterLiveTileTask(
-                    TimerInfoSaved.Name,
-                    typeof(TileRefreshUtils).FullName,
-                    null,
-                    null
-                );
-        }
-        public static async Task DetectLiveTileTask()
-        {
-            var status = await BackgroundExecutionManager.RequestAccessAsync();
-            if (status == BackgroundAccessStatus.Unspecified || status == BackgroundAccessStatus.Denied)
-            {
-                return;
-            }
-            var CurrentTimerTask = new TimerInfo();
-            foreach (var t in BackgroundTaskRegistration.AllTasks)
-            {
-                Debug.WriteLine("检测到了名为" + t.Value.Name + "的后台任务");
-            }
-            if(CurrentTimerTask.Enabled)
-            { 
-                var TaskMatch = BackgroundTaskRegistration.AllTasks.Where(m => { return m.Value.Name == CurrentTimerTask.Name; });
-                if(TaskMatch.Count()==0)
-                {
-                    Debug.WriteLine("没有检测到名为" + CurrentTimerTask.Name + "的后台任务,更新记录");
-                    CurrentTimerTask.Enabled = false;
-                }
-            }
-        }
-        //LiveTileSetting
-        public static async Task RegisterLiveTileTask(string _Name, string _TaskEntryPoint, IBackgroundTrigger _Trigger, IBackgroundCondition[] _ConditionTable)
-        {
-            //建立builder
-            var taskBuilder = new BackgroundTaskBuilder
-            {
-                Name = _Name,
-                TaskEntryPoint = _TaskEntryPoint
-            };
-            //清除已有的
-            var status = await BackgroundExecutionManager.RequestAccessAsync();
-            if (status == BackgroundAccessStatus.Unspecified || status == BackgroundAccessStatus.Denied)
-            {
-                return;
-            }
-            var updater = TileUpdateManager.CreateTileUpdaterForApplication();
-            updater.Clear();
-
-            foreach (var t in BackgroundTaskRegistration.AllTasks)
-            {
-                if (t.Value.Name == taskBuilder.Name)
-                {
-                    t.Value.Unregister(true);
-                }
-            }
-            //如果Trigger为null撤销这个后台任务
-            if (_Trigger == null) return;
-
-            //继续构建builder
-            taskBuilder.SetTrigger(_Trigger);
-
-            if (_ConditionTable != null)
-                foreach (var m in _ConditionTable)
-                {
-                    taskBuilder.AddCondition(m);
-                }
-
-            //注册
-            taskBuilder.Register();
-            Debug.WriteLine("注册了名为" + _Name + "的后台任务");
-        }
-    }
-    public class TimerInfo : INotifyPropertyChanged
-    {
-        const string key = "TimerTask";
-        const string key_enabled = "TimerTaskEnabled";
-
-        public string Name { get { return key; } }
-
-        private bool _Enabled;
-        public bool Enabled
-        {
-            get
-            {
-                if (ApplicationData.Current.LocalSettings.Values.ContainsKey(key_enabled))
-                    _Enabled = (bool)ApplicationData.Current.LocalSettings.Values[key_enabled];
-                else
-                    _Enabled = false;
-                Debug.WriteLine("get: Enabled:" + _Enabled.ToString());
-                return _Enabled;
-            }
-            set
-            {
-                ApplicationData.Current.LocalSettings.Values[key_enabled] = value;
-                _Enabled = value;
-                Debug.WriteLine("set: Enabled:"+value.ToString());
-                PropertyChangeEventHappen(nameof(Enabled));
-                UpdateWorkRegister();
-            }
-        }
-
-        private uint _TimerSpan;
-        public uint TimerSpan
-        {
-            get
-            {
-                if (ApplicationData.Current.LocalSettings.Values.ContainsKey(key))
-                    _TimerSpan = (uint)(ApplicationData.Current.LocalSettings.Values[key]);
-                else
-                    _TimerSpan = 60;
-                Debug.WriteLine("get: TimerSpan:" + _TimerSpan.ToString());
-                return _TimerSpan;
-            }
-            set
-            {
-                _TimerSpan = value;
-                ApplicationData.Current.LocalSettings.Values[key] = _TimerSpan;
-                Debug.WriteLine("set: TimerSpan:" + value.ToString());
-                PropertyChangeEventHappen(nameof(TimerSpan));
-                UpdateWorkRegister();
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void PropertyChangeEventHappen(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public void UpdateWorkRegister()
-        {
-            App.RegisterWorks(this);
+            // Each time a navigation event occurs, update the Back button's visibility
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                ((Frame)sender).CanGoBack ?
+                AppViewBackButtonVisibility.Visible :
+                AppViewBackButtonVisibility.Collapsed;
         }
     }
 }

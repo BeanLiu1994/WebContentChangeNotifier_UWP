@@ -1,0 +1,15 @@
+/obj/*
+/*/obj
+/*/AppPackages/*
+/*/bin/*
+/*/*lock*
+/DTAR*/*
+/TilesIcon/icon output
+bin/
+.vs/
+AppPackages/
+BundleArtifacts/
+WebContentChangeNotify/Assets/
+*.pfx
+WebContentChangeNotify/Package.StoreAssociation.xml
+*.user

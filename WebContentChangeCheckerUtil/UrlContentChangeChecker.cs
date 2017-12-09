@@ -11,9 +11,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using Toasts;
 using Windows.Storage;
 using Windows.UI.Xaml.Data;
+using Microsoft.Toolkit.Uwp.Notifications;
+using Windows.UI.Notifications;
 
 namespace WebContentChangeCheckerUtil
 {
@@ -504,13 +505,45 @@ namespace WebContentChangeCheckerUtil
         {
             // 有新的出现后发送通知
             if (UrlContentSnapList.Count > 1)
-                ToastsDef.SendNotification_TwoString("关注的网站 [" + id + "] 内容更新了", newOne.Url);
+                ToastsDef.SendNotification_TwoString("关注的网站 [" + id + "] 内容更新了", newOne.Url, "Id=" + id);
         }
         public async void Delete()
         {
             Updating = true;
             await localStorageFolder.DeleteAsync();
             Updating = false;
+        }
+    }
+
+    public class ToastsDef
+    {
+        public static void SendNotification_TwoString(string s1,string s2,string launch = "")
+        {
+
+            var content = new ToastContent()
+            {
+                Launch = launch,
+                Visual = new ToastVisual()
+                {
+                    BindingGeneric = new ToastBindingGeneric()
+                    {
+                        Children =
+                            {
+                                new AdaptiveText()
+                                {
+                                    Text = s1
+                                },
+
+                                new AdaptiveText()
+                                {
+                                    Text = s2
+                                }
+                            }
+                    }
+                }
+            };
+            ToastNotificationManager.CreateToastNotifier().Show(new ToastNotification(content.GetXml()));
+
         }
     }
 

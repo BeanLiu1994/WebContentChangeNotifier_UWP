@@ -6,13 +6,14 @@
     xmlns:UrlCCCUtil="using:WebContentChangeCheckerUtil"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
+    mc:Ignorable="d" Loaded="Page_Loaded">
     <Page.Resources>
         <UrlCCCUtil:Nullable_boolRevertConverter x:Key="Nullable_boolRevertConverter"/>
         <UrlCCCUtil:Nullable_boolConverter x:Key="Nullable_boolConverter"/>
     </Page.Resources>
 
-    <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
+    <Grid Background="{ThemeResource SystemControlAcrylicWindowBrush}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>

@@ -12,7 +12,7 @@
     <TypeInstantiation Name="App1.AppClass" Arguments="System.Int32" Activate="Required Public" />
 
     使用 Namespace 指令将反射策略应用于特定命名空间中的所有类型
-    <Namespace Name="DataClasses.ViewModels" Seralize="All" />
+    <Namespace Name="DataClasses.ViewModels" Serialize="All" />
 -->
 
 <Directives xmlns="http://schemas.microsoft.com/netfx/2013/01/metadata">
